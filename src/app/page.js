@@ -65,7 +65,7 @@ const REPUBLIC_CHAIN = {
   rest: "https://rest.republicai.io",
   evmRpc: "https://evm-rpc.republicai.io",
   grpc: "grpc.republicai.io:443",
-  pointsPortal: "https://points.republicai.io",
+  pointsPortal: "https://points.republicai.io/?ref=071B43",
   bip44: { coinType: 60 },
   bech32Config: {
     bech32PrefixAccAddr: "rai",
@@ -663,7 +663,7 @@ export default function DoubleLight() {
         <div style={{ marginTop: "28px", display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
           {[
             ["Republic AI Network", "https://republicai.io"],
-            ["Points Portal", "https://points.republicai.io"],
+            ["Points Portal", "https://points.republicai.io/?ref=071B43"],
             ["Docs", "https://docs.republicai.io"],
             ["Keplr Wallet", "https://www.keplr.app"],
           ].map(([label, href]) => (
