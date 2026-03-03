@@ -197,6 +197,7 @@ export default function DoubleLight() {
   const [toast, setToast] = useState(null);
   const [shielded, setShielded] = useState(false);
 
+  const [showWalletPicker, setShowWalletPicker] = useState(false);
   // Keplr connect
   const connectKeplr = useCallback(async () => {
     if (typeof window === "undefined") return;
@@ -259,6 +260,49 @@ export default function DoubleLight() {
       setTimeout(() => setToast(null), 4000);
     }
   }, []);
+  // EVM wallet connect (MetaMask, Rabby, etc)
+  const connectEVM = useCallback(async () => {
+    if (typeof window === "undefined" || !window.ethereum) {
+      setToast({ type: "error", msg: "No EVM wallet found. Install MetaMask or Rabby." });
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+    try {
+      // Request account access
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      // Try adding Republic AI network
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [{
+            chainId: "0x12F85",
+            chainName: "Republic AI Testnet",
+            nativeCurrency: { name: "RAI", symbol: "RAI", decimals: 18 },
+            rpcUrls: ["https://evm-rpc.republicai.io"],
+          }],
+        });
+      } catch (e) { console.log("Add chain error:", e); }
+      if (accounts && accounts.length > 0) {
+        const addr = accounts[0];
+        setWallet({ address: addr, name: addr.slice(0, 6) + "..." + addr.slice(-4), type: "evm" });
+        // Fetch balance via EVM RPC
+        try {
+          const balHex = await window.ethereum.request({ method: "eth_getBalance", params: [addr, "latest"] });
+          const balWei = parseInt(balHex, 16);
+          const readable = (balWei / 1e18).toFixed(4);
+          TOKENS[0].balance = readable;
+          setFromToken(prev => ({ ...prev, balance: readable }));
+          setShieldToken(prev => ({ ...prev, balance: readable }));
+        } catch (e) { console.log("EVM balance error:", e); }
+        setToast({ type: "success", msg: "Connected via " + (window.ethereum.isRabby ? "Rabby" : window.ethereum.isMetaMask ? "MetaMask" : "EVM Wallet") });
+        setTimeout(() => setToast(null), 3000);
+      }
+    } catch (err) {
+      console.error("EVM connect error:", err);
+      setToast({ type: "error", msg: "Failed to connect EVM wallet." });
+      setTimeout(() => setToast(null), 4000);
+    }
+  }, []);
 
   const disconnect = () => {
     setWallet(null);
@@ -281,7 +325,7 @@ export default function DoubleLight() {
   };
 
   const execAction = () => {
-    if (!wallet) { connectKeplr(); return; }
+    if (!wallet) { setShowWalletPicker(true); return; }
     setProcessing(true);
     const delay = tab === "swap" ? 2200 : 2800;
     setTimeout(() => {
@@ -377,7 +421,7 @@ export default function DoubleLight() {
 
           {/* Connect / Disconnect */}
           <button
-            onClick={wallet ? disconnect : connectKeplr}
+            onClick={wallet ? disconnect : () => setShowWalletPicker(true)}
             style={{
               display: "flex", alignItems: "center", gap: "8px",
               background: wallet ? "rgba(255,80,80,0.08)" : "linear-gradient(135deg, #00E5A0, #00B37D)",
@@ -396,7 +440,7 @@ export default function DoubleLight() {
             ) : (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><circle cx="18" cy="16" r="1"/></svg>
-                Connect Keplr
+                Connect Wallet
               </>
             )}
           </button>
@@ -533,7 +577,7 @@ export default function DoubleLight() {
             onMouseEnter={(e) => { if (!processing) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,229,160,0.15)"; }}}
             onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
           >
-            {processing ? "⟳ Processing..." : !wallet ? "Connect Keplr Wallet" : tab === "swap" ? `Swap ${fromToken.symbol} → ${toToken.symbol}` : tab === "shield" ? `Shield ${shieldToken.symbol}` : `Unshield ${shieldToken.symbol}`}
+            {processing ? "⟳ Processing..." : !wallet ? "Connect Wallet" : tab === "swap" ? `Swap ${fromToken.symbol} → ${toToken.symbol}` : tab === "shield" ? `Shield ${shieldToken.symbol}` : `Unshield ${shieldToken.symbol}`}
           </button>
 
           {/* Wallet info when connected */}
@@ -565,6 +609,29 @@ export default function DoubleLight() {
       </main>
 
       <TokenModal isOpen={modal.open} onClose={() => setModal({ open: false, target: null })} onSelect={handleSelect} tokens={TOKENS} />
+
+      {/* Wallet Picker Modal */}
+      {showWalletPicker && (
+        <div onClick={() => setShowWalletPicker(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "linear-gradient(160deg,#080f0c,#0c1a14,#080f0c)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "24px", padding: "28px", width: "380px", maxWidth: "92vw" }}>
+            <div style={{ fontFamily: "Outfit", fontSize: "18px", fontWeight: 700, color: "#e6fff5", marginBottom: "6px" }}>Connect Wallet</div>
+            <div style={{ fontSize: "13px", color: "#2a5c47", marginBottom: "20px" }}>Choose your wallet to connect to Republic AI</div>
+            <button onClick={() => { setShowWalletPicker(false); connectKeplr(); }} style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "14px 16px", background: "rgba(0,229,160,0.04)", border: "1px solid rgba(0,229,160,0.08)", borderRadius: "14px", cursor: "pointer", marginBottom: "8px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 600, fontSize: "15px", transition: "all .15s" }} onMouseEnter={e => e.currentTarget.style.background="rgba(0,229,160,0.08)"} onMouseLeave={e => e.currentTarget.style.background="rgba(0,229,160,0.04)"}>
+              <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "#7B61FF22", border: "1px solid #7B61FF44", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>K</div>
+              <div style={{ textAlign: "left" }}><div>Keplr</div><div style={{ fontSize: "11px", color: "#2a5c47", fontWeight: 400 }}>Cosmos + EVM</div></div>
+            </button>
+            <button onClick={() => { setShowWalletPicker(false); connectEVM(); }} style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "14px 16px", background: "rgba(0,229,160,0.04)", border: "1px solid rgba(0,229,160,0.08)", borderRadius: "14px", cursor: "pointer", marginBottom: "8px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 600, fontSize: "15px", transition: "all .15s" }} onMouseEnter={e => e.currentTarget.style.background="rgba(0,229,160,0.08)"} onMouseLeave={e => e.currentTarget.style.background="rgba(0,229,160,0.04)"}>
+              <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "#F6851B22", border: "1px solid #F6851B44", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>M</div>
+              <div style={{ textAlign: "left" }}><div>MetaMask</div><div style={{ fontSize: "11px", color: "#2a5c47", fontWeight: 400 }}>EVM Wallet</div></div>
+            </button>
+            <button onClick={() => { setShowWalletPicker(false); connectEVM(); }} style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "14px 16px", background: "rgba(0,229,160,0.04)", border: "1px solid rgba(0,229,160,0.08)", borderRadius: "14px", cursor: "pointer", marginBottom: "8px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 600, fontSize: "15px", transition: "all .15s" }} onMouseEnter={e => e.currentTarget.style.background="rgba(0,229,160,0.08)"} onMouseLeave={e => e.currentTarget.style.background="rgba(0,229,160,0.04)"}>
+              <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "#496CE922", border: "1px solid #496CE944", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>R</div>
+              <div style={{ textAlign: "left" }}><div>Rabby</div><div style={{ fontSize: "11px", color: "#2a5c47", fontWeight: 400 }}>EVM Wallet</div></div>
+            </button>
+            <button onClick={() => setShowWalletPicker(false)} style={{ width: "100%", padding: "12px", background: "transparent", border: "1px solid rgba(0,229,160,0.06)", borderRadius: "12px", color: "#2a5c47", fontFamily: "Outfit", fontWeight: 500, fontSize: "13px", cursor: "pointer", marginTop: "4px" }}>Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
