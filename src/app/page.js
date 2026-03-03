@@ -324,8 +324,25 @@ export default function DoubleLight() {
   useEffect(() => {
     if (appKitConnected && appKitAddress) {
       setWallet({ address: appKitAddress, name: appKitAddress.slice(0, 6) + "..." + appKitAddress.slice(-4), type: "evm" });
-      const fetchBal = async () => {
+      const setupChainAndBalance = async () => {
         try {
+          if (window.ethereum) {
+            try {
+              await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x12F85" }] });
+            } catch (switchErr) {
+              if (switchErr.code === 4902) {
+                await window.ethereum.request({
+                  method: "wallet_addEthereumChain",
+                  params: [{
+                    chainId: "0x12F85",
+                    chainName: "Republic AI Testnet",
+                    nativeCurrency: { name: "RAI", symbol: "RAI", decimals: 18 },
+                    rpcUrls: ["https://evm-rpc.republicai.io"],
+                  }],
+                });
+              }
+            }
+          }
           const res = await fetch("https://evm-rpc.republicai.io", {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", method: "eth_getBalance", params: [appKitAddress, "latest"], id: 1 }),
@@ -335,9 +352,9 @@ export default function DoubleLight() {
           TOKENS[0].balance = readable;
           setFromToken(prev => ({ ...prev, balance: readable }));
           setShieldToken(prev => ({ ...prev, balance: readable }));
-        } catch (e) { console.log("EVM balance error:", e); }
+        } catch (e) { console.log("Chain switch/balance error:", e); }
       };
-      fetchBal();
+      setupChainAndBalance();
       setToast({ type: "success", msg: "Connected via EVM Wallet" });
       setTimeout(() => setToast(null), 3000);
     }
