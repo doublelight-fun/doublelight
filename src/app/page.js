@@ -1,4 +1,5 @@
 "use client";
+import { useAppKit, useAppKitAccount, useDisconnect as useAppKitDisconnect } from "@reown/appkit/react";
 
 
 // Bech32 converter for EVM <-> Cosmos address
@@ -390,8 +391,10 @@ export default function DoubleLight() {
     tryReconnect();
   }, [connectKeplr, connectEVM]);
   const disconnect = () => {
+    if (appKitConnected) appKitDisconnect();
     setWallet(null);
     setShielded(false);
+    setShowWalletMenu(false);
     setToast({ type: "info", msg: "Wallet disconnected" });
     setTimeout(() => setToast(null), 2500);
   };
