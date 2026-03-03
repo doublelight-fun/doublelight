@@ -501,7 +501,7 @@ export default function DoubleLight() {
             </button>
             {/* Dropdown Menu */}
             {showWalletMenu && wallet && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "linear-gradient(160deg,#080f0c,#0c1a14)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "16px", padding: "16px", zIndex: 50, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "linear-gradient(160deg,#080f0c,#0c1a14)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "16px", padding: "16px", zIndex: 50, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
                 <div style={{ fontSize: "13px", fontFamily: "Outfit", fontWeight: 700, color: "#e6fff5", marginBottom: "12px" }}>Wallet Info</div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                   <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Cosmos</span>
