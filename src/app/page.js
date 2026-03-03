@@ -442,7 +442,7 @@ export default function DoubleLight() {
       )}
 
       {/* ==================== HEADER ==================== */}
-      <header className="dl-header" style={{ position: "relative", zIndex: 10, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 36px", borderBottom: "1px solid rgba(0,229,160,0.06)" }}>
+      <header className="dl-header" style={{ position: "relative", zIndex: 20, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 36px", borderBottom: "1px solid rgba(0,229,160,0.06)" }}>
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: "linear-gradient(135deg, #00E5A0, #00B37D)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 900, color: "#050b08", fontFamily: "Outfit" }}>
