@@ -567,31 +567,27 @@ function TokenInput({ label, token, amount, onChange, onTokenClick, readOnly, di
         <span style={{ fontSize: "12px", color: "#2a5c47", fontWeight: 500 }}>{label}</span>
         <span style={{ fontSize: "12px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Bal: {token.balance}</span>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <input
-          type="text"
-          placeholder="0.0"
-          value={amount}
-          onChange={(e) => onChange(e.target.value)}
-          readOnly={readOnly}
-          style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: dimmed ? "#4a8a70" : "#e6fff5", fontSize: "28px", fontFamily: "Outfit", fontWeight: 700 }}
-        />
-        <button
-          onClick={onTokenClick}
-          style={{ display: "flex", alignItems: "center", gap: "7px", padding: "8px 14px", background: "rgba(0,229,160,0.05)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "12px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 600, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", transition: "all .15s" }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,229,160,0.1)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,229,160,0.05)")}
-        >
-          <span style={{ width: "26px", height: "26px", borderRadius: "50%", background: `${token.color}18`, border: `1px solid ${token.color}33`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>{token.icon}</span>
-          {token.symbol}
-          <span style={{ fontSize: "10px", color: "#2a5c47" }}>▾</span>
-        </button>
-      </div>
+      <button
+        onClick={onTokenClick}
+        style={{ display: "flex", alignItems: "center", gap: "7px", padding: "8px 14px", background: "rgba(0,229,160,0.05)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "12px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 600, fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", transition: "all .15s", marginBottom: "12px" }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,229,160,0.1)")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,229,160,0.05)")}
+      >
+        <span style={{ width: "26px", height: "26px", borderRadius: "50%", background: token.color + "18", border: "1px solid " + token.color + "33", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>{token.icon}</span>
+        {token.symbol}
+        <span style={{ fontSize: "10px", color: "#2a5c47" }}>u25be</span>
+      </button>
+      <input
+        type="text"
+        placeholder="0.0"
+        value={amount}
+        onChange={(e) => onChange(e.target.value)}
+        readOnly={readOnly}
+        style={{ width: "100%", background: "transparent", border: "none", outline: "none", color: dimmed ? "#4a8a70" : "#e6fff5", fontSize: "28px", fontFamily: "Outfit", fontWeight: 700 }}
+      />
     </div>
   );
 }
-
-function SwapInfo({ from, to, shielded }) {
   return (
     <div style={{ marginTop: "14px", padding: "12px 16px", background: "rgba(0,229,160,0.02)", borderRadius: "12px", border: "1px solid rgba(0,229,160,0.04)" }}>
       <InfoRow label="Rate" value={`1 ${from.symbol} ≈ ${from.symbol === "RAI" ? "2.45" : "0.408"} ${to.symbol}`} />
