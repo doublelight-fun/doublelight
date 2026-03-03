@@ -512,7 +512,7 @@ export default function DoubleLight() {
                   <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? wallet.address.slice(0,8)+"..."+wallet.address.slice(-6) : raiToEvm(wallet.address).slice(0,8)+"..."+raiToEvm(wallet.address).slice(-6)}</span>
                 </div>
                 <div style={{ borderTop: "1px solid rgba(0,229,160,0.06)", paddingTop: "10px" }}>
-                  <button onClick={() => { setShowWalletMenu(false); disconnect(); }} style={{ width: "100%", padding: "10px", background: "rgba(255,80,80,0.08)", border: "1px solid rgba(255,80,80,0.15)", borderRadius: "10px", color: "#ff5050", fontFamily: "Outfit", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>Disconnect</button>
+                  <button onClick={(e) => { e.stopPropagation(); setShowWalletMenu(false); disconnect(); }} style={{ width: "100%", padding: "10px", background: "rgba(255,80,80,0.08)", border: "1px solid rgba(255,80,80,0.15)", borderRadius: "10px", color: "#ff5050", fontFamily: "Outfit", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>Disconnect</button>
                 </div>
               </div>
             )}
