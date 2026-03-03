@@ -10,7 +10,6 @@ import WalletPicker from "./components/WalletPicker";
 import TokenInput from "./components/TokenInput";
 import SwapInfo from "./components/SwapInfo";
 import { InfoRow } from "./components/SwapInfo";
-import AIRiskPanel from "./components/AIRiskPanel";
 
 export default function DoubleLight() {
   const {
@@ -244,9 +243,6 @@ export default function DoubleLight() {
               />
 
               {fromAmt && <SwapInfo from={fromTokenLive} to={toTokenLive} shielded={shielded} />}
-
-              {/* AI Risk Analysis */}
-              <AIRiskPanel fromToken={fromTokenLive} toToken={toTokenLive} amount={fromAmt} />
             </>
           ) : (
             <>
