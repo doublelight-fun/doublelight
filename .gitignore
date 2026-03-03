@@ -5,3 +5,5 @@ node_modules/
 doublelight-refactor.sh
 ai-risk-analysis.sh
 *.bak
+fix-chain-switch.sh
+*.sh

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { TokenIcon } from "./TokenInput";
 
 export default function TokenModal({ isOpen, onClose, onSelect, tokens }) {
   const [query, setQuery] = useState("");
@@ -16,44 +17,40 @@ export default function TokenModal({ isOpen, onClose, onSelect, tokens }) {
     <div
       onClick={onClose}
       style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.65)",
-        backdropFilter: "blur(10px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 100,
-        animation: "fadeIn .2s ease",
+        position: "fixed", inset: 0,
+        background: "rgba(0,0,0,0.7)",
+        backdropFilter: "blur(12px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        zIndex: 100, animation: "fadeIn .2s ease",
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "linear-gradient(160deg, #080f0c, #0c1a14, #080f0c)",
+          background: "linear-gradient(160deg, #060d09, #0a1810, #060d09)",
           border: "1px solid rgba(0,229,160,0.1)",
-          borderRadius: "24px",
-          padding: "24px",
-          width: "400px",
-          maxWidth: "92vw",
-          maxHeight: "480px",
-          display: "flex",
-          flexDirection: "column",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+          borderRadius: "24px", padding: "24px",
+          width: "420px", maxWidth: "92vw", maxHeight: "500px",
+          display: "flex", flexDirection: "column",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.6), 0 0 40px rgba(0,229,160,0.04)",
         }}
       >
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <span style={{ fontFamily: "Outfit", fontSize: "17px", fontWeight: 700, color: "#e6fff5" }}>
+          <span style={{ fontFamily: "Outfit", fontSize: "18px", fontWeight: 700, color: "#e6fff5" }}>
             Select Token
           </span>
           <button
             onClick={onClose}
             style={{
-              width: "32px", height: "32px", borderRadius: "10px",
-              background: "rgba(0,229,160,0.08)", border: "1px solid rgba(0,229,160,0.12)",
-              color: "#00E5A0", cursor: "pointer", fontSize: "14px",
+              width: "34px", height: "34px", borderRadius: "10px",
+              background: "rgba(0,229,160,0.06)", border: "1px solid rgba(0,229,160,0.1)",
+              color: "#4a8a70", cursor: "pointer", fontSize: "14px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "all .15s",
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#00E5A0"; e.currentTarget.style.borderColor = "rgba(0,229,160,0.25)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "#4a8a70"; e.currentTarget.style.borderColor = "rgba(0,229,160,0.1)"; }}
           >
             ✕
           </button>
@@ -61,20 +58,19 @@ export default function TokenModal({ isOpen, onClose, onSelect, tokens }) {
 
         {/* Search */}
         <input
-          placeholder="Search token..."
+          placeholder="Search by name or symbol..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           style={{
-            background: "rgba(0,229,160,0.04)",
-            border: "1px solid rgba(0,229,160,0.1)",
-            borderRadius: "14px",
-            padding: "12px 16px",
-            color: "#e6fff5",
-            fontSize: "14px",
-            fontFamily: "Manrope",
-            outline: "none",
-            marginBottom: "12px",
+            background: "rgba(0,229,160,0.03)",
+            border: "1px solid rgba(0,229,160,0.08)",
+            borderRadius: "14px", padding: "13px 16px",
+            color: "#e6fff5", fontSize: "14px", fontFamily: "Manrope",
+            outline: "none", marginBottom: "14px",
+            transition: "border-color 0.2s",
           }}
+          onFocus={(e) => (e.target.style.borderColor = "rgba(0,229,160,0.25)")}
+          onBlur={(e) => (e.target.style.borderColor = "rgba(0,229,160,0.08)")}
         />
 
         {/* Token list */}
@@ -92,25 +88,16 @@ export default function TokenModal({ isOpen, onClose, onSelect, tokens }) {
               onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,229,160,0.06)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <div
-                style={{
-                  width: "38px", height: "38px", borderRadius: "50%",
-                  background: `${t.color}18`, border: `1px solid ${t.color}33`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "18px", marginRight: "12px", flexShrink: 0,
-                }}
-              >
-                {t.icon}
-              </div>
-              <div style={{ textAlign: "left", flex: 1 }}>
-                <div style={{ color: "#e6fff5", fontWeight: 600, fontSize: "14px", fontFamily: "Outfit" }}>
+              <TokenIcon symbol={t.symbol} color={t.color} size={38} />
+              <div style={{ textAlign: "left", flex: 1, marginLeft: "12px" }}>
+                <div style={{ color: "#e6fff5", fontWeight: 700, fontSize: "14px", fontFamily: "Outfit" }}>
                   {t.symbol}
                 </div>
-                <div style={{ color: "#4a8a70", fontSize: "12px", fontFamily: "Manrope" }}>
+                <div style={{ color: "#2a5c47", fontSize: "12px", fontFamily: "Manrope" }}>
                   {t.name}
                 </div>
               </div>
-              <div style={{ color: "#4a8a70", fontSize: "13px", fontFamily: "JetBrains Mono" }}>
+              <div style={{ color: "#4a8a70", fontSize: "13px", fontFamily: "JetBrains Mono", fontWeight: 500 }}>
                 {t.balance || "0.00"}
               </div>
             </button>
