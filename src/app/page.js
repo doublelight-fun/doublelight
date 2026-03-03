@@ -250,6 +250,7 @@ export default function DoubleLight() {
   const [shielded, setShielded] = useState(false);
 
   const [showWalletPicker, setShowWalletPicker] = useState(false);
+  const [showWalletMenu, setShowWalletMenu] = useState(false);
   // Keplr connect
   const connectKeplr = useCallback(async () => {
     if (typeof window === "undefined") return;
@@ -471,31 +472,51 @@ export default function DoubleLight() {
             </div>
           )}
 
-          {/* Connect / Disconnect */}
-          <button
-            onClick={wallet ? disconnect : () => setShowWalletPicker(true)}
-            style={{
-              display: "flex", alignItems: "center", gap: "8px",
-              background: wallet ? "rgba(255,80,80,0.08)" : "linear-gradient(135deg, #00E5A0, #00B37D)",
-              border: wallet ? "1px solid rgba(255,80,80,0.2)" : "none",
-              borderRadius: "12px", padding: "10px 20px",
-              color: wallet ? "#ff5050" : "#050b08",
-              fontFamily: "Outfit", fontWeight: 700, fontSize: "13px",
-              cursor: "pointer", transition: "all .2s",
-            }}
-          >
-            {wallet ? (
-              <>
-                <img src="https://raw.githubusercontent.com/niccolosottile/keplr-logo/main/Keplr%20Logo%20Icon.svg" alt="" style={{ width: "16px", height: "16px" }} onError={(e) => e.target.style.display = "none"} />
-                {wallet.name}
-              </>
-            ) : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><circle cx="18" cy="16" r="1"/></svg>
-                Connect Wallet
-              </>
+          {/* Connect / Wallet Menu */}
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={wallet ? () => setShowWalletMenu(!showWalletMenu) : () => setShowWalletPicker(true)}
+              style={{
+                display: "flex", alignItems: "center", gap: "8px",
+                background: wallet ? "rgba(0,229,160,0.08)" : "linear-gradient(135deg, #00E5A0, #00B37D)",
+                border: wallet ? "1px solid rgba(0,229,160,0.15)" : "none",
+                borderRadius: "12px", padding: "10px 20px",
+                color: wallet ? "#00E5A0" : "#050b08",
+                fontFamily: "Outfit", fontWeight: 700, fontSize: "13px",
+                cursor: "pointer", transition: "all .2s",
+              }}
+            >
+              {wallet ? (
+                <>
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#00E5A0", boxShadow: "0 0 6px #00E5A0" }} />
+                  {wallet.address.startsWith("0x") ? wallet.address.slice(0,6)+"..."+wallet.address.slice(-4) : wallet.address.slice(0,8)+"..."+wallet.address.slice(-4)}
+                  <span style={{ fontSize: "10px", marginLeft: "2px" }}>{showWalletMenu ? "u25B4" : "u25BE"}</span>
+                </>
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><circle cx="18" cy="16" r="1"/></svg>
+                  Connect Wallet
+                </>
+              )}
+            </button>
+            {/* Dropdown Menu */}
+            {showWalletMenu && wallet && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "linear-gradient(160deg,#080f0c,#0c1a14)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "16px", padding: "16px", zIndex: 50, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+                <div style={{ fontSize: "13px", fontFamily: "Outfit", fontWeight: 700, color: "#e6fff5", marginBottom: "12px" }}>Wallet Info</div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Cosmos</span>
+                  <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? evmToRai(wallet.address).slice(0,10)+"..."+evmToRai(wallet.address).slice(-6) : wallet.address.slice(0,10)+"..."+wallet.address.slice(-6)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>EVM</span>
+                  <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? wallet.address.slice(0,8)+"..."+wallet.address.slice(-6) : raiToEvm(wallet.address).slice(0,8)+"..."+raiToEvm(wallet.address).slice(-6)}</span>
+                </div>
+                <div style={{ borderTop: "1px solid rgba(0,229,160,0.06)", paddingTop: "10px" }}>
+                  <button onClick={() => { setShowWalletMenu(false); disconnect(); }} style={{ width: "100%", padding: "10px", background: "rgba(255,80,80,0.08)", border: "1px solid rgba(255,80,80,0.15)", borderRadius: "10px", color: "#ff5050", fontFamily: "Outfit", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>Disconnect</button>
+                </div>
+              </div>
             )}
-          </button>
+          </div>
         </div>
       </header>
 
@@ -632,23 +653,6 @@ export default function DoubleLight() {
           >
             {processing ? "⟳ Processing..." : !wallet ? "Connect Wallet" : tab === "swap" ? `Swap ${fromToken.symbol} → ${toToken.symbol}` : tab === "shield" ? `Shield ${shieldToken.symbol}` : `Unshield ${shieldToken.symbol}`}
           </button>
-
-          {/* Wallet info when connected */}
-          {wallet && (
-            <div style={{ marginTop: "14px", padding: "10px 14px", background: "rgba(0,229,160,0.02)", borderRadius: "12px", border: "1px solid rgba(0,229,160,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Wallet</span>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Cosmos</span>
-                  <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? evmToRai(wallet.address).slice(0,12)+"..."+evmToRai(wallet.address).slice(-6) : wallet.address.slice(0,12)+"..."+wallet.address.slice(-6)}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>EVM</span>
-                  <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? wallet.address.slice(0,8)+"..."+wallet.address.slice(-6) : raiToEvm(wallet.address).slice(0,8)+"..."+raiToEvm(wallet.address).slice(-6)}</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Footer */}
