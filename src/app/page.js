@@ -356,7 +356,39 @@ export default function DoubleLight() {
       setTimeout(() => setToast(null), 4000);
     }
   }, []);
+  useEffect(() => {
+    const tryReconnect = async () => {
+      if (typeof window === "undefined") return;
+      try {
+        if (window.keplr) {
+          const key = await window.keplr.getKey(REPUBLIC_CHAIN.chainId).catch(() => null);
+          if (key) { connectKeplr(); return; }
+        }
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: "eth_accounts" });
+          if (accounts && accounts.length > 0) { connectEVM(); }
+        }
+      } catch (e) { console.log("Auto-reconnect skipped:", e); }
+    };
+    tryReconnect();
+  }, [connectKeplr, connectEVM]);
 
+  useEffect(() => {
+    const tryReconnect = async () => {
+      if (typeof window === "undefined") return;
+      try {
+        if (window.keplr) {
+          const key = await window.keplr.getKey(REPUBLIC_CHAIN.chainId).catch(() => null);
+          if (key) { connectKeplr(); return; }
+        }
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: "eth_accounts" });
+          if (accounts && accounts.length > 0) { connectEVM(); }
+        }
+      } catch (e) { console.log("Auto-reconnect skipped:", e); }
+    };
+    tryReconnect();
+  }, [connectKeplr, connectEVM]);
   const disconnect = () => {
     setWallet(null);
     setShielded(false);
