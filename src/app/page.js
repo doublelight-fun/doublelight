@@ -252,17 +252,6 @@ export default function DoubleLight() {
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [showWalletMenu, setShowWalletMenu] = useState(false);
   const walletMenuRef = useRef(null);
-  useEffect(() => {
-    if (!showWalletMenu) return;
-    const handler = (e) => {
-      if (walletMenuRef.current && !walletMenuRef.current.contains(e.target)) {
-        setShowWalletMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [showWalletMenu]);
-  // Keplr connect
   const connectKeplr = useCallback(async () => {
     if (typeof window === "undefined") return;
 
@@ -484,9 +473,9 @@ export default function DoubleLight() {
           )}
 
           {/* Connect / Wallet Menu */}
-          <div ref={walletMenuRef} style={{ position: "relative" }}>
+          <div ref={walletMenuRef} onClick={(e) => { if (e.target.closest("[data-dropdown]")) return; wallet ? setShowWalletMenu(prev => !prev) : setShowWalletPicker(true); }} style={{ position: "relative" }}>
             <div role="button" tabIndex={0}
-              onClick={wallet ? () => setShowWalletMenu(true) : () => setShowWalletPicker(true)}
+              
               style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 background: wallet ? "rgba(0,229,160,0.08)" : "linear-gradient(135deg, #00E5A0, #00B37D)",
@@ -512,7 +501,7 @@ export default function DoubleLight() {
             </div>
             {/* Dropdown Menu */}
             {showWalletMenu && wallet && (
-              <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "linear-gradient(160deg,#080f0c,#0c1a14)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "16px", padding: "16px", zIndex: 50, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+              <div data-dropdown="true" onClick={(e) => e.stopPropagation()} style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "linear-gradient(160deg,#080f0c,#0c1a14)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "16px", padding: "16px", zIndex: 50, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
                 <div style={{ fontSize: "13px", fontFamily: "Outfit", fontWeight: 700, color: "#e6fff5", marginBottom: "12px" }}>Wallet Info</div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                   <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Cosmos</span>
@@ -523,7 +512,7 @@ export default function DoubleLight() {
                   <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? wallet.address.slice(0,8)+"..."+wallet.address.slice(-6) : raiToEvm(wallet.address).slice(0,8)+"..."+raiToEvm(wallet.address).slice(-6)}</span>
                 </div>
                 <div style={{ borderTop: "1px solid rgba(0,229,160,0.06)", paddingTop: "10px" }}>
-                  <button onClick={() => { setTimeout(disconnect, 100); }} style={{ width: "100%", padding: "10px", background: "rgba(255,80,80,0.08)", border: "1px solid rgba(255,80,80,0.15)", borderRadius: "10px", color: "#ff5050", fontFamily: "Outfit", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>Disconnect</button>
+                  <button onClick={() => disconnect()} style={{ width: "100%", padding: "10px", background: "rgba(255,80,80,0.08)", border: "1px solid rgba(255,80,80,0.15)", borderRadius: "10px", color: "#ff5050", fontFamily: "Outfit", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}>Disconnect</button>
                 </div>
               </div>
             )}
