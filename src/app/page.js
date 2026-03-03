@@ -575,7 +575,7 @@ function TokenInput({ label, token, amount, onChange, onTokenClick, readOnly, di
       >
         <span style={{ width: "26px", height: "26px", borderRadius: "50%", background: token.color + "18", border: "1px solid " + token.color + "33", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>{token.icon}</span>
         {token.symbol}
-        <span style={{ fontSize: "10px", color: "#2a5c47" }}>u25be</span>
+        <span style={{ fontSize: "10px", color: "#2a5c47" }}>▾</span>
       </button>
       <input
         type="text"
@@ -588,6 +588,7 @@ function TokenInput({ label, token, amount, onChange, onTokenClick, readOnly, di
     </div>
   );
 }
+function SwapInfo({ from, to, shielded }) {
   return (
     <div style={{ marginTop: "14px", padding: "12px 16px", background: "rgba(0,229,160,0.02)", borderRadius: "12px", border: "1px solid rgba(0,229,160,0.04)" }}>
       <InfoRow label="Rate" value={`1 ${from.symbol} ≈ ${from.symbol === "RAI" ? "2.45" : "0.408"} ${to.symbol}`} />
