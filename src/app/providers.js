@@ -23,11 +23,7 @@ createAppKit({
     icons: ["https://doublelight.fun/favicon.ico"],
   },
   themeMode: "dark",
-  features: {
-    analytics: false,
-    socials: false,
-    email: false,
-  },
+  features: { analytics: false, socials: false, email: false },
   chainImages: {},
   enableWalletConnect: true,
   allowUnsupportedChain: false,
