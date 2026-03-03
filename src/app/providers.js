@@ -1,5 +1,6 @@
 "use client";
 import { createAppKit } from "@reown/appkit/react";
+import { EthersAdapter } from "@reown/appkit-adapter-ethers";
 
 const republicAI = {
   id: 77701,
@@ -11,6 +12,7 @@ const republicAI = {
 const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 
 createAppKit({
+  adapters: [new EthersAdapter()],
   projectId,
   networks: [republicAI],
   metadata: {
@@ -20,6 +22,9 @@ createAppKit({
     icons: ["https://doublelight.fun/favicon.ico"],
   },
   themeMode: "dark",
+  features: {
+    analytics: false,
+  },
 });
 
 export function Web3Provider({ children }) {
