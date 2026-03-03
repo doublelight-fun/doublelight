@@ -490,7 +490,7 @@ export default function DoubleLight() {
                 <>
                   <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#00E5A0", boxShadow: "0 0 6px #00E5A0" }} />
                   {wallet.address.startsWith("0x") ? wallet.address.slice(0,6)+"..."+wallet.address.slice(-4) : wallet.address.slice(0,8)+"..."+wallet.address.slice(-4)}
-                  <span style={{ fontSize: "10px", marginLeft: "2px" }}>{showWalletMenu ? "u25B4" : "u25BE"}</span>
+                  
                 </>
               ) : (
                 <>
