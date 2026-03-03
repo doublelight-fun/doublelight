@@ -318,48 +318,30 @@ export default function DoubleLight() {
     }
   }, []);
   // EVM wallet connect (MetaMask, Rabby, etc)
-  const connectEVM = useCallback(async () => {
-    if (typeof window === "undefined" || !window.ethereum) {
-      setToast({ type: "error", msg: "No EVM wallet found. Install MetaMask or Rabby." });
-      setTimeout(() => setToast(null), 4000);
-      return;
-    }
-    try {
-      // Request account access
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      // Try adding Republic AI network
-      try {
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [{
-            chainId: "0x12F85",
-            chainName: "Republic AI Testnet",
-            nativeCurrency: { name: "RAI", symbol: "RAI", decimals: 18 },
-            rpcUrls: ["https://evm-rpc.republicai.io"],
-          }],
-        });
-      } catch (e) { console.log("Add chain error:", e); }
-      if (accounts && accounts.length > 0) {
-        const addr = accounts[0];
-        setWallet({ address: addr, name: addr.slice(0, 6) + "..." + addr.slice(-4), type: "evm" });
-        // Fetch balance via EVM RPC
+  const connectEVM = useCallback(() => {
+    openAppKit();
+  }, [openAppKit]);
+  useEffect(() => {
+    if (appKitConnected && appKitAddress) {
+      setWallet({ address: appKitAddress, name: appKitAddress.slice(0, 6) + "..." + appKitAddress.slice(-4), type: "evm" });
+      const fetchBal = async () => {
         try {
-          const balHex = await window.ethereum.request({ method: "eth_getBalance", params: [addr, "latest"] });
-          const balWei = parseInt(balHex, 16);
-          const readable = (balWei / 1e18).toFixed(4);
+          const res = await fetch("https://evm-rpc.republicai.io", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", method: "eth_getBalance", params: [appKitAddress, "latest"], id: 1 }),
+          });
+          const data = await res.json();
+          const readable = (parseInt(data.result, 16) / 1e18).toFixed(4);
           TOKENS[0].balance = readable;
           setFromToken(prev => ({ ...prev, balance: readable }));
           setShieldToken(prev => ({ ...prev, balance: readable }));
         } catch (e) { console.log("EVM balance error:", e); }
-        setToast({ type: "success", msg: "Connected via " + (window.ethereum.isRabby ? "Rabby" : window.ethereum.isMetaMask ? "MetaMask" : "EVM Wallet") });
-        setTimeout(() => setToast(null), 3000);
-      }
-    } catch (err) {
-      console.error("EVM connect error:", err);
-      setToast({ type: "error", msg: "Failed to connect EVM wallet." });
-      setTimeout(() => setToast(null), 4000);
+      };
+      fetchBal();
+      setToast({ type: "success", msg: "Connected via EVM Wallet" });
+      setTimeout(() => setToast(null), 3000);
     }
-  }, []);
+  }, [appKitConnected, appKitAddress]);
   const disconnect = () => {
     if (appKitConnected) appKitDisconnect();
     setWallet(null);
