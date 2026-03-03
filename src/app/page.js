@@ -238,6 +238,9 @@ function TokenModal({ isOpen, onClose, onSelect, tokens }) {
 // MAIN APP
 // ============================================================
 export default function DoubleLight() {
+  const { open: openAppKit } = useAppKit();
+  const { address: appKitAddress, isConnected: appKitConnected } = useAppKitAccount();
+  const { disconnect: appKitDisconnect } = useAppKitDisconnect();
   const [tab, setTab] = useState("swap");
   const [wallet, setWallet] = useState(null); // { address, name }
   const [fromToken, setFromToken] = useState(TOKENS[0]);
