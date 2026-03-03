@@ -251,6 +251,17 @@ export default function DoubleLight() {
 
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [showWalletMenu, setShowWalletMenu] = useState(false);
+  const walletMenuRef = useRef(null);
+  useEffect(() => {
+    if (!showWalletMenu) return;
+    const handler = (e) => {
+      if (walletMenuRef.current && !walletMenuRef.current.contains(e.target)) {
+        setShowWalletMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showWalletMenu]);
   // Keplr connect
   const connectKeplr = useCallback(async () => {
     if (typeof window === "undefined") return;
@@ -473,9 +484,9 @@ export default function DoubleLight() {
           )}
 
           {/* Connect / Wallet Menu */}
-          <div style={{ position: "relative" }}>
+          <div ref={walletMenuRef} style={{ position: "relative" }}>
             <div role="button" tabIndex={0}
-              onClick={wallet ? () => setShowWalletMenu(!showWalletMenu) : () => setShowWalletPicker(true)}
+              onClick={wallet ? () => setShowWalletMenu(true) : () => setShowWalletPicker(true)}
               style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 background: wallet ? "rgba(0,229,160,0.08)" : "linear-gradient(135deg, #00E5A0, #00B37D)",
