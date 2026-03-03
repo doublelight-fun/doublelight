@@ -1,5 +1,57 @@
 "use client";
 
+
+// Bech32 converter for EVM <-> Cosmos address
+const ALPHABET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+function bech32Encode(prefix, data) {
+  const values = [];
+  for (let i = 0; i < data.length; i++) { values.push(data[i]); }
+  const converted = [];
+  let acc = 0, bits = 0;
+  for (let i = 0; i < values.length; i++) {
+    acc = (acc << 8) | values[i]; bits += 8;
+    while (bits >= 5) { bits -= 5; converted.push((acc >> bits) & 31); }
+  }
+  if (bits > 0) converted.push((acc << (5 - bits)) & 31);
+  let chk = 1;
+  const expand = [];
+  for (let i = 0; i < prefix.length; i++) expand.push(prefix.charCodeAt(i) >> 5);
+  expand.push(0);
+  for (let i = 0; i < prefix.length; i++) expand.push(prefix.charCodeAt(i) & 31);
+  const all = expand.concat(converted).concat([0,0,0,0,0,0]);
+  for (let i = 0; i < all.length; i++) {
+    const b = chk >> 25; chk = ((chk & 0x1ffffff) << 5) ^ all[i];
+    if (b & 1) chk ^= 0x3b6a57b2; if (b & 2) chk ^= 0x26508e6d;
+    if (b & 4) chk ^= 0x1ea119fa; if (b & 8) chk ^= 0x3d4233dd;
+    if (b & 16) chk ^= 0x2a1462b3;
+  }
+  chk ^= 1;
+  const checksum = [];
+  for (let i = 0; i < 6; i++) checksum.push((chk >> (5 * (5 - i))) & 31);
+  const result = converted.concat(checksum);
+  let out = prefix + "1";
+  for (let i = 0; i < result.length; i++) out += ALPHABET[result[i]];
+  return out;
+}
+function evmToRai(evmAddr) {
+  if (!evmAddr || !evmAddr.startsWith("0x")) return "";
+  const hex = evmAddr.slice(2);
+  const bytes = [];
+  for (let i = 0; i < hex.length; i += 2) bytes.push(parseInt(hex.substr(i, 2), 16));
+  return bech32Encode("rai", bytes);
+}
+function raiToEvm(raiAddr) {
+  if (!raiAddr || !raiAddr.startsWith("rai1")) return "";
+  const data = raiAddr.slice(4);
+  const values = [];
+  for (let i = 0; i < data.length - 6; i++) values.push(ALPHABET.indexOf(data[i]));
+  const bytes = []; let acc = 0, bits = 0;
+  for (let i = 0; i < values.length; i++) {
+    acc = (acc << 5) | values[i]; bits += 5;
+    while (bits >= 8) { bits -= 8; bytes.push((acc >> bits) & 255); }
+  }
+  return "0x" + bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+}
 import { useState, useEffect, useRef, useCallback } from "react";
 
 // ============================================================
@@ -534,6 +586,7 @@ export default function DoubleLight() {
                 onChange={setShieldAmt}
                 onTokenClick={() => openModal("shield")}
                 readOnly={false}
+                readOnly={false}
               />
 
               {tab === "unshield" && (
@@ -584,7 +637,16 @@ export default function DoubleLight() {
           {wallet && (
             <div style={{ marginTop: "14px", padding: "10px 14px", background: "rgba(0,229,160,0.02)", borderRadius: "12px", border: "1px solid rgba(0,229,160,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Wallet</span>
-              <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.slice(0, 12)}...{wallet.address.slice(-8)}</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Cosmos</span>
+                  <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? evmToRai(wallet.address).slice(0,12)+"..."+evmToRai(wallet.address).slice(-6) : wallet.address.slice(0,12)+"..."+wallet.address.slice(-6)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>EVM</span>
+                  <span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{wallet.address.startsWith("0x") ? wallet.address.slice(0,8)+"..."+wallet.address.slice(-6) : raiToEvm(wallet.address).slice(0,8)+"..."+raiToEvm(wallet.address).slice(-6)}</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
