@@ -234,12 +234,24 @@ export default function DoubleLight() {
 
       if (accounts && accounts.length > 0) {
         const addr = accounts[0].address;
-        setWallet({
-          address: addr,
-          name: addr.slice(0, 8) + "..." + addr.slice(-6),
-        });
+        const shortName = addr.slice(0, 8) + "..." + addr.slice(-6);
+        setWallet({ address: addr, name: shortName });
+        // Fetch RAI balance
+        try {
+          const balRes = await fetch(REPUBLIC_CHAIN.rest + "/cosmos/bank/v1beta1/balances/" + addr);
+          const balData = await balRes.json();
+          if (balData.balances) {
+            const raiBal = balData.balances.find(function(b) { return b.denom === "arai"; });
+            if (raiBal) {
+              const readable = (parseFloat(raiBal.amount) / 1e18).toFixed(4);
+              setFromToken(function(prev) { return Object.assign({}, prev, { balance: readable }); });
+              setShieldToken(function(prev) { return Object.assign({}, prev, { balance: readable }); });
+              TOKENS[0].balance = readable;
+            }
+          }
+        } catch (e) { console.log("Balance fetch error:", e); }
         setToast({ type: "success", msg: "Connected to Republic AI Testnet" });
-        setTimeout(() => setToast(null), 3000);
+        setTimeout(function() { setToast(null); }, 3000);
       }
     } catch (err) {
       console.error("Keplr connect error:", err);
