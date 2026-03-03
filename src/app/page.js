@@ -474,7 +474,7 @@ export default function DoubleLight() {
 
           {/* Connect / Wallet Menu */}
           <div style={{ position: "relative" }}>
-            <button
+            <div role="button" tabIndex={0}
               onClick={wallet ? () => setShowWalletMenu(!showWalletMenu) : () => setShowWalletPicker(true)}
               style={{
                 display: "flex", alignItems: "center", gap: "8px",
@@ -498,7 +498,7 @@ export default function DoubleLight() {
                   Connect Wallet
                 </>
               )}
-            </button>
+            </div>
             {/* Dropdown Menu */}
             {showWalletMenu && wallet && (
               <div onClick={(e) => e.stopPropagation()} style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "linear-gradient(160deg,#080f0c,#0c1a14)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "16px", padding: "16px", zIndex: 50, boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
