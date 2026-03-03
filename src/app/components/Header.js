@@ -25,7 +25,7 @@ export default function Header({
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "16px 32px",
         borderBottom: "1px solid rgba(0,229,160,0.05)",
-        background: "rgba(5,11,8,0.85)",
+        background: "rgba(4,9,7,0.9)",
         backdropFilter: "blur(16px)",
       }}
     >
@@ -37,7 +37,7 @@ export default function Header({
             background: "linear-gradient(135deg, #00E5A0, #00B37D)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: "15px", fontWeight: 900, color: "#050b08", fontFamily: "Outfit",
-            boxShadow: "0 2px 12px rgba(0,229,160,0.25)",
+            boxShadow: "0 2px 16px rgba(0,229,160,0.3), 0 0 4px rgba(0,229,160,0.15)",
           }}
         >
           DL

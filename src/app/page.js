@@ -106,8 +106,8 @@ export default function DoubleLight() {
         @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
         @keyframes cardGlow {
-          0%,100% { box-shadow: 0 0 40px rgba(0,229,160,0.05), 0 0 80px rgba(0,229,160,0.02), 0 24px 64px rgba(0,0,0,0.5) }
-          50% { box-shadow: 0 0 60px rgba(0,229,160,0.08), 0 0 120px rgba(0,229,160,0.03), 0 24px 64px rgba(0,0,0,0.5) }
+          0%,100% { box-shadow: 0 0 50px rgba(0,229,160,0.06), 0 0 100px rgba(0,229,160,0.03), 0 24px 64px rgba(0,0,0,0.5) }
+          50% { box-shadow: 0 0 80px rgba(0,229,160,0.1), 0 0 140px rgba(0,229,160,0.04), 0 24px 64px rgba(0,0,0,0.5) }
         }
         @keyframes toastIn { from { transform: translateX(-50%) translateY(-20px); opacity: 0 } to { transform: translateX(-50%) translateY(0); opacity: 1 } }
         @keyframes btnPulse {
@@ -117,7 +117,7 @@ export default function DoubleLight() {
         @keyframes spin { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
         ::-webkit-scrollbar { width: 4px }
         ::-webkit-scrollbar-thumb { background: rgba(0,229,160,0.15); border-radius: 4px }
-        input::placeholder { color: #1e4a38 }
+        input::placeholder { color: #15362a }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none }
 
         @media (max-width: 540px) {
@@ -198,12 +198,13 @@ export default function DoubleLight() {
           className="dl-card"
           style={{
             width: "480px",
-            background: "linear-gradient(165deg, rgba(6,13,9,0.98), rgba(10,24,16,0.96), rgba(6,13,9,0.98))",
-            border: "1px solid rgba(0,229,160,0.06)",
+            background: "linear-gradient(165deg, rgba(6,13,9,0.99), rgba(10,22,16,0.98), rgba(6,13,9,0.99))",
+            border: "1px solid rgba(0,229,160,0.1)",
             borderRadius: "24px",
             padding: "24px",
-            backdropFilter: "blur(20px)",
+            backdropFilter: "blur(24px)",
             animation: "cardGlow 6s ease infinite",
+            boxShadow: "inset 0 1px 0 rgba(0,229,160,0.04), 0 0 0 1px rgba(0,229,160,0.03)",
           }}
         >
           {tab === "swap" ? (
@@ -221,8 +222,8 @@ export default function DoubleLight() {
                 <button
                   onClick={swapDirection}
                   style={{
-                    width: "38px", height: "38px", borderRadius: "12px",
-                    background: "linear-gradient(135deg, #071a12, #0f2e20)",
+                    width: "40px", height: "40px", borderRadius: "12px",
+                    background: "linear-gradient(135deg, #081c14, #112e22)",
                     border: "1px solid rgba(0,229,160,0.12)",
                     color: "#00E5A0", fontSize: "14px", cursor: "pointer",
                     transition: "all .3s",

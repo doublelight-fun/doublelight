@@ -351,10 +351,14 @@ export default function AIRiskPanel({ fromToken, toToken, amount }) {
               background: "linear-gradient(135deg, rgba(0,229,160,0.15), rgba(0,179,125,0.1))",
               border: "1px solid rgba(0,229,160,0.15)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "13px",
             }}
           >
-            🧠
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00E5A0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a8 8 0 0 0-8 8c0 3.4 2.1 6.3 5 7.4V20h6v-2.6c2.9-1.1 5-4 5-7.4a8 8 0 0 0-8-8z"/>
+              <path d="M10 20v1a2 2 0 1 0 4 0v-1"/>
+              <path d="M9 10h1.5v2H9z"/>
+              <path d="M13.5 10H15v2h-1.5z"/>
+            </svg>
           </div>
           <div>
             <div

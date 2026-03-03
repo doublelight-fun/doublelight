@@ -17,9 +17,9 @@ export default function SwapInfo({ from, to, shielded }) {
       style={{
         marginTop: "14px",
         padding: "14px 16px",
-        background: "rgba(0,229,160,0.015)",
+        background: "rgba(0,229,160,0.025)",
         borderRadius: "14px",
-        border: "1px solid rgba(0,229,160,0.05)",
+        border: "1px solid rgba(0,229,160,0.07)",
       }}
     >
       <InfoRow label="Rate" value={`1 ${from.symbol} \u2248 ${rate} ${to.symbol}`} />

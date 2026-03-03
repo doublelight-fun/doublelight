@@ -24,8 +24,8 @@ export default function TokenInput({ label, token, amount, onChange, onTokenClic
   return (
     <div
       style={{
-        background: "rgba(0,229,160,0.02)",
-        border: "1px solid rgba(0,229,160,0.06)",
+        background: "rgba(0,229,160,0.025)",
+        border: "1px solid rgba(0,229,160,0.08)",
         borderRadius: "20px",
         padding: "16px 18px",
         marginBottom: "4px",
@@ -54,7 +54,7 @@ export default function TokenInput({ label, token, amount, onChange, onTokenClic
           style={{
             flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none",
             color: dimmed ? "#4a8a70" : "#e6fff5",
-            fontSize: "30px", fontFamily: "Outfit", fontWeight: 700,
+            fontSize: "32px", fontFamily: "Outfit", fontWeight: 700,
             letterSpacing: "-0.5px",
           }}
         />
@@ -65,8 +65,8 @@ export default function TokenInput({ label, token, amount, onChange, onTokenClic
           style={{
             display: "flex", alignItems: "center", gap: "8px",
             padding: "8px 14px 8px 8px",
-            background: "rgba(0,229,160,0.06)",
-            border: "1px solid rgba(0,229,160,0.12)",
+            background: "rgba(0,229,160,0.07)",
+            border: "1px solid rgba(0,229,160,0.14)",
             borderRadius: "14px",
             color: "#e6fff5", fontFamily: "Outfit", fontWeight: 700,
             fontSize: "15px", cursor: "pointer", whiteSpace: "nowrap",
