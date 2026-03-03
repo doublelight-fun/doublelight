@@ -95,28 +95,12 @@ Currency:    RAI (arai, 18 decimals)
 - Keplr Wallet extension
 - Republic AI testnet RAI (from [Points Portal](https://points.republicai.io))
 
-### Installation
-
-```bash
-# Clone the repo
-git clone https://github.com/doublelight-fun/doublelight.git
-cd doublelight
-
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-```
-
-Open `http://localhost:3000` in your browser.
-
 ### Connecting to Republic AI
 
 1. Install [Keplr Wallet](https://keplr.app/download)
 2. Visit [doublelight.fun](https://doublelight.fun)
 3. Click "Connect Keplr" — the app will automatically suggest Republic AI Testnet
-4. Claim testnet RAI from the [Points Portal](https://points.republicai.io)
+4. Claim testnet RAI from the [Points Portal](https://points.republicai.io/?ref=071B43)
 5. Start swapping privately
 
 ---
@@ -188,7 +172,7 @@ git push origin feature/new-feature
 - **Website**: [doublelight.fun](https://doublelight.fun)
 - **Republic AI**: [republicai.io](https://republicai.io)
 - **Docs**: [docs.republicai.io](https://docs.republicai.io)
-- **Points Portal**: [points.republicai.io](https://points.republicai.io)
+- **Points Portal**: [points.republicai.io](https://points.republicai.io/?ref=071B43)
 - **Discord**: [discord.gg/therepublic](https://discord.gg/therepublic)
 
 ---
