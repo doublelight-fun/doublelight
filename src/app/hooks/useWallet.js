@@ -62,28 +62,49 @@ export function useWallet() {
 
   // Switch EVM wallet to Republic AI chain
   const switchToRepublicChain = useCallback(async () => {
-    if (!window.ethereum) return;
+    if (!window.ethereum) {
+      showToast("warn", "No wallet provider detected. Please add Republic AI Testnet manually (Chain ID: 77701, RPC: evm-rpc.republicai.io)", 6000);
+      return false;
+    }
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: REPUBLIC_CHAIN.evmChainIdHex }],
       });
+      return true;
     } catch (switchErr) {
       if (switchErr.code === 4902) {
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: REPUBLIC_CHAIN.evmChainIdHex,
-              chainName: REPUBLIC_CHAIN.chainName,
-              nativeCurrency: { name: "RAI", symbol: "RAI", decimals: 18 },
-              rpcUrls: [REPUBLIC_CHAIN.evmRpc],
-            },
-          ],
-        });
+        // Chain not added yet — try adding it
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: REPUBLIC_CHAIN.evmChainIdHex,
+                chainName: REPUBLIC_CHAIN.chainName,
+                nativeCurrency: { name: "RAI", symbol: "RAI", decimals: 18 },
+                rpcUrls: [REPUBLIC_CHAIN.evmRpc],
+              },
+            ],
+          });
+          return true;
+        } catch (addErr) {
+          console.error("Failed to add Republic AI chain:", addErr);
+          showToast("error", "Could not add Republic AI Testnet. Please add it manually in your wallet — Chain ID: 77701, RPC: evm-rpc.republicai.io", 8000);
+          return false;
+        }
+      } else if (switchErr.code === 4001) {
+        // User rejected the switch
+        showToast("warn", "Chain switch rejected. Please switch to Republic AI Testnet manually.", 5000);
+        return false;
+      } else {
+        // Other errors (e.g. wallet doesn't support method)
+        console.error("Chain switch error:", switchErr);
+        showToast("error", "Could not switch network. Please add Republic AI Testnet manually — Chain ID: 77701, RPC: evm-rpc.republicai.io", 8000);
+        return false;
       }
     }
-  }, []);
+  }, [showToast]);
 
   // Connect via Keplr (Cosmos native)
   const connectKeplr = useCallback(async () => {
@@ -140,12 +161,22 @@ export function useWallet() {
       setWallet({ address: appKitAddress, type: "evm" });
 
       (async () => {
-        await switchToRepublicChain();
-        const bal = await fetchEvmBalance(appKitAddress);
-        setRaiBalance(bal);
+        const switched = await switchToRepublicChain();
+        if (switched) {
+          const bal = await fetchEvmBalance(appKitAddress);
+          setRaiBalance(bal);
+          showToast("success", "Connected to Republic AI Testnet via EVM Wallet");
+        } else {
+          // Still connected but on wrong chain — try fetching balance anyway
+          try {
+            const bal = await fetchEvmBalance(appKitAddress);
+            setRaiBalance(bal);
+          } catch (e) {
+            console.log("Balance fetch on wrong chain:", e);
+          }
+          showToast("warn", "Connected but not on Republic AI Testnet. Switch network in your wallet.", 6000);
+        }
       })();
-
-      showToast("success", "Connected via EVM Wallet");
     }
   }, [appKitConnected, appKitAddress, switchToRepublicChain, fetchEvmBalance, showToast]);
 
