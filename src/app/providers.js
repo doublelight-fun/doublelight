@@ -1,8 +1,6 @@
 "use client";
 import { createAppKit } from "@reown/appkit/react";
-import { WagmiProvider } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import { EthersAdapter } from "@reown/appkit-adapter-ethers";
 
 const republicAI = {
   id: 77701,
@@ -13,13 +11,8 @@ const republicAI = {
 
 const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 
-const wagmiAdapter = new WagmiAdapter({
-  projectId,
-  networks: [republicAI],
-});
-
 createAppKit({
-  adapters: [wagmiAdapter],
+  adapters: [new EthersAdapter()],
   projectId,
   networks: [republicAI],
   metadata: {
@@ -31,14 +24,7 @@ createAppKit({
   themeMode: "dark",
 });
 
-const queryClient = new QueryClient();
-
 export function Web3Provider({ children }) {
-  return (
-    <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    </WagmiProvider>
-  );
+  return <>{children}</>;
 }
+// redeploy

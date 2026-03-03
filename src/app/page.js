@@ -1,5 +1,5 @@
 "use client";
-import { useAppKit, useAppKitAccount, useDisconnect as useAppKitDisconnect } from "@reown/appkit/react";
+import { useAppKit, useAppKitAccount, useDisconnect } from "@reown/appkit/react";
 
 
 // Bech32 converter for EVM <-> Cosmos address
@@ -240,7 +240,7 @@ function TokenModal({ isOpen, onClose, onSelect, tokens }) {
 export default function DoubleLight() {
   const { open: openAppKit } = useAppKit();
   const { address: appKitAddress, isConnected: appKitConnected } = useAppKitAccount();
-  const { disconnect: appKitDisconnect } = useAppKitDisconnect();
+  const { disconnect: appKitDisconnect } = useDisconnect();
   const [tab, setTab] = useState("swap");
   const [wallet, setWallet] = useState(null); // { address, name }
   const [fromToken, setFromToken] = useState(TOKENS[0]);
