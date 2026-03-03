@@ -254,6 +254,7 @@ export default function DoubleLight() {
   const [shielded, setShielded] = useState(false);
 
   const [showWalletMenu, setShowWalletMenu] = useState(false);
+  const [showWalletPicker, setShowWalletPicker] = useState(false);
   const walletMenuRef = useRef(null);
   const connectKeplr = useCallback(async () => {
     if (typeof window === "undefined") return;
@@ -381,7 +382,7 @@ export default function DoubleLight() {
   };
 
   const execAction = () => {
-    if (!wallet) { openAppKit(); return; }
+    if (!wallet) { setShowWalletPicker(true); return; }
     setProcessing(true);
     const delay = tab === "swap" ? 2200 : 2800;
     setTimeout(() => {
@@ -476,7 +477,7 @@ export default function DoubleLight() {
           )}
 
           {/* Connect / Wallet Menu */}
-          <div ref={walletMenuRef} onClick={(e) => { if (e.target.closest("[data-dropdown]")) return; wallet ? setShowWalletMenu(prev => !prev) : openAppKit(); }} style={{ position: "relative" }}>
+          <div ref={walletMenuRef} onClick={(e) => { if (e.target.closest("[data-dropdown]")) return; wallet ? setShowWalletMenu(prev => !prev) : setShowWalletPicker(true); }} style={{ position: "relative" }}>
             <div role="button" tabIndex={0}
               
               style={{
