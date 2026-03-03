@@ -679,24 +679,20 @@ export default function DoubleLight() {
       {/* Wallet Picker Modal */}
       {showWalletPicker && (
         <div onClick={() => setShowWalletPicker(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "linear-gradient(160deg,#080f0c,#0c1a14,#080f0c)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "24px", padding: "28px", width: "400px", maxWidth: "92vw" }}>
-            <div style={{ fontFamily: "Outfit", fontSize: "18px", fontWeight: 700, color: "#e6fff5", marginBottom: "6px" }}>Connect Wallet</div>
-            <div style={{ fontSize: "13px", color: "#2a5c47", marginBottom: "20px" }}>Choose your wallet to connect to Republic AI</div>
-            {[
-              { name: "Rabby", sub: "EVM Wallet", color: "#7C6FEB", icon: "https://rabby.io/assets/rabby.svg", detect: typeof window!=="undefined" && window.ethereum && window.ethereum.isRabby, action: "evm" },
-              { name: "Keplr", sub: "Cosmos + EVM", color: "#7B61FF", icon: "https://assets.leapwallet.io/keplr-logo.svg", detect: typeof window!=="undefined" && window.keplr, action: "keplr" },
-              { name: "MetaMask", sub: "EVM Wallet", color: "#F6851B", icon: "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg", detect: typeof window!=="undefined" && window.ethereum && window.ethereum.isMetaMask, action: "evm" },
-              { name: "Phantom", sub: "Multi-chain", color: "#AB9FF2", icon: "https://phantom.app/img/phantom-logo.svg", detect: typeof window!=="undefined" && window.phantom && window.phantom.ethereum, action: "evm" },
-              { name: "Coinbase", sub: "EVM Wallet", color: "#0052FF", icon: "https://altcoinsbox.com/wp-content/uploads/2022/12/coinbase-wallet-logo.svg", detect: typeof window!=="undefined" && window.ethereum && window.ethereum.isCoinbaseWallet, action: "evm" },
-              { name: "Trust", sub: "EVM Wallet", color: "#3375BB", icon: "https://trustwallet.com/assets/images/media/assets/trust_platform.svg", detect: typeof window!=="undefined" && window.ethereum && window.ethereum.isTrust, action: "evm" },
-            ].map(w => (
-              <button key={w.name} onClick={() => { setShowWalletPicker(false); w.action==="keplr" ? connectKeplr() : connectEVM(); }} style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "14px 16px", background: "rgba(0,229,160,0.04)", border: "1px solid rgba(0,229,160,0.08)", borderRadius: "14px", cursor: "pointer", marginBottom: "8px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 600, fontSize: "15px", transition: "all .15s" }} onMouseEnter={e => e.currentTarget.style.background="rgba(0,229,160,0.08)"} onMouseLeave={e => e.currentTarget.style.background="rgba(0,229,160,0.04)"}>
-                <img src={w.icon} alt="" style={{ width: "36px", height: "36px", borderRadius: "10px", background: w.color+"15", border: "1px solid "+w.color+"33", padding: "4px" }} onError={e => { e.target.style.display="none"; }} />
-                <div style={{ textAlign: "left", flex: 1 }}><div>{w.name}</div><div style={{ fontSize: "11px", color: "#2a5c47", fontWeight: 400 }}>{w.sub}</div></div>
-                <span style={{ fontSize: "11px", fontFamily: "JetBrains Mono", color: w.detect ? "#00E5A0" : "#2a3d34", fontWeight: 500 }}>{w.detect ? "Detected" : "Not found"}</span>
-              </button>
-            ))}
-            <button onClick={() => setShowWalletPicker(false)} style={{ width: "100%", padding: "12px", background: "transparent", border: "1px solid rgba(0,229,160,0.06)", borderRadius: "12px", color: "#2a5c47", fontFamily: "Outfit", fontWeight: 500, fontSize: "13px", cursor: "pointer", marginTop: "4px" }}>Cancel</button>
+          <div onClick={e => e.stopPropagation()} style={{ background: "linear-gradient(160deg,#080f0c,#0c1a14,#080f0c)", border: "1px solid rgba(0,229,160,0.1)", borderRadius: "24px", padding: "32px", width: "420px", maxWidth: "92vw" }}>
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <div style={{ fontFamily: "Outfit", fontSize: "20px", fontWeight: 700, color: "#e6fff5", marginBottom: "8px" }}>Connect Wallet</div>
+              <div style={{ fontSize: "13px", color: "#2a5c47" }}>Choose how to connect to Republic AI</div>
+            </div>
+            <button onClick={() => { setShowWalletPicker(false); connectKeplr(); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", width: "100%", padding: "18px 24px", background: "rgba(0,229,160,0.04)", border: "1px solid rgba(0,229,160,0.12)", borderRadius: "16px", cursor: "pointer", marginBottom: "12px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 700, fontSize: "16px", letterSpacing: "0.5px", textTransform: "uppercase", transition: "all .2s" }} onMouseEnter={e => { e.currentTarget.style.background="rgba(0,229,160,0.1)"; e.currentTarget.style.borderColor="rgba(0,229,160,0.3)"; }} onMouseLeave={e => { e.currentTarget.style.background="rgba(0,229,160,0.04)"; e.currentTarget.style.borderColor="rgba(0,229,160,0.12)"; }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5A0" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+              Continue with Keplr
+            </button>
+            <button onClick={() => { setShowWalletPicker(false); connectEVM(); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", width: "100%", padding: "18px 24px", background: "rgba(0,229,160,0.04)", border: "1px solid rgba(0,229,160,0.12)", borderRadius: "16px", cursor: "pointer", marginBottom: "16px", color: "#e6fff5", fontFamily: "Outfit", fontWeight: 700, fontSize: "16px", letterSpacing: "0.5px", textTransform: "uppercase", transition: "all .2s" }} onMouseEnter={e => { e.currentTarget.style.background="rgba(0,229,160,0.1)"; e.currentTarget.style.borderColor="rgba(0,229,160,0.3)"; }} onMouseLeave={e => { e.currentTarget.style.background="rgba(0,229,160,0.04)"; e.currentTarget.style.borderColor="rgba(0,229,160,0.12)"; }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e6fff5" strokeWidth="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              Continue with EVM Wallet
+            </button>
+            <button onClick={() => setShowWalletPicker(false)} style={{ width: "100%", padding: "12px", background: "transparent", border: "none", color: "#2a5c47", fontFamily: "Outfit", fontWeight: 500, fontSize: "13px", cursor: "pointer" }}>Cancel</button>
           </div>
         </div>
       )}
