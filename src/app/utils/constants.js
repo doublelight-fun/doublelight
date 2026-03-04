@@ -45,6 +45,6 @@ export const TABS = ["swap", "stake", "compute", "shield"];
 export const FOOTER_LINKS = [
   ["Republic AI Network", "https://republicai.io"],
   ["Points Portal", "https://points.republicai.io/?ref=071B43"],
-  ["Docs", "https://docs.republicai.io"],
-  ["Keplr Wallet", "https://www.keplr.app"],
+  ["Docs", "https://github.com/doublelight-fun/doublelight"],
+  ["X / Twitter", "https://x.com/2lightswap"],
 ];
