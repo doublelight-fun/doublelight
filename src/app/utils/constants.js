@@ -60,6 +60,19 @@ export const DEFAULT_TOKENS = [
   { symbol: "WBTC", name: "Wrapped BTC",  icon: "\u20BF", color: "#F7931A", decimals: 8,  address: TOKEN_ADDRESSES.WBTC },
 ];
 
+// DoubleLightAMM contract
+export const AMM_ADDRESS = "0x843dE781095d9436d4eA3c2fce76cd82fa49faC1";
+
+// AMM ABI (minimal)
+export const AMM_ABI = [
+  "function swap(address tokenIn, address tokenOut, uint256 amountIn) returns (uint256)",
+  "function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) returns (uint256)",
+  "function removeLiquidity(address tokenA, address tokenB, uint256 lpAmount) returns (uint256, uint256)",
+  "function getAmountOut(address tokenIn, address tokenOut, uint256 amountIn) view returns (uint256)",
+  "function getPoolInfo(address tokenA, address tokenB) view returns (uint256 reserveA, uint256 reserveB, uint256 totalLP, bool exists)",
+  "function getUserLP(address tokenA, address tokenB, address user) view returns (uint256)",
+];
+
 export const TABS = ["swap", "stake", "compute", "shield"];
 
 export const FOOTER_LINKS = [
