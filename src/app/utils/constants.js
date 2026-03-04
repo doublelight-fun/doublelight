@@ -30,14 +30,34 @@ export const REPUBLIC_CHAIN = {
   },
 };
 
+// Deployed token contract addresses (Republic AI Testnet)
+export const TOKEN_ADDRESSES = {
+  WRAI: "0xBCc87F9A4A7C637A27eCebbb1F58b6C2dd72F032",
+  USDC: "0x4056fbCc1B167deaeF2cAB801C2599BF97C69862",
+  USDT: "0x57605eaaEe8708701d31dE3467F715c8646C9fB1",
+  WETH: "0x4d8f700822086149863a848dccBa953924DAf51B",
+  WBTC: "0x4F291E2CaE9428A96E32FfbA240e7B4a3948AA1F",
+};
+
+// ERC-20 ABI (minimal for balance + transfer)
+export const ERC20_ABI = [
+  "function balanceOf(address) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+  "function symbol() view returns (string)",
+  "function transfer(address to, uint256 amount) returns (bool)",
+  "function approve(address spender, uint256 amount) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function faucet(uint256 amount) external",
+];
+
 // Default token list
 export const DEFAULT_TOKENS = [
-  { symbol: "RAI",  name: "Republic AI",  icon: "\u25C6", color: "#00E5A0", decimals: 18 },
-  { symbol: "WRAI", name: "Wrapped RAI",  icon: "\u25C7", color: "#00C489", decimals: 18 },
-  { symbol: "USDC", name: "USD Coin",     icon: "\u25CE", color: "#2775CA", decimals: 6 },
-  { symbol: "USDT", name: "Tether",       icon: "\u20AE", color: "#50AF95", decimals: 6 },
-  { symbol: "WETH", name: "Wrapped ETH",  icon: "\u27E0", color: "#627EEA", decimals: 18 },
-  { symbol: "WBTC", name: "Wrapped BTC",  icon: "\u20BF", color: "#F7931A", decimals: 8 },
+  { symbol: "RAI",  name: "Republic AI",  icon: "\u25C6", color: "#00E5A0", decimals: 18, address: null },
+  { symbol: "WRAI", name: "Wrapped RAI",  icon: "\u25C7", color: "#00C489", decimals: 18, address: TOKEN_ADDRESSES.WRAI },
+  { symbol: "USDC", name: "USD Coin",     icon: "\u25CE", color: "#2775CA", decimals: 6,  address: TOKEN_ADDRESSES.USDC },
+  { symbol: "USDT", name: "Tether",       icon: "\u20AE", color: "#50AF95", decimals: 6,  address: TOKEN_ADDRESSES.USDT },
+  { symbol: "WETH", name: "Wrapped ETH",  icon: "\u27E0", color: "#627EEA", decimals: 18, address: TOKEN_ADDRESSES.WETH },
+  { symbol: "WBTC", name: "Wrapped BTC",  icon: "\u20BF", color: "#F7931A", decimals: 8,  address: TOKEN_ADDRESSES.WBTC },
 ];
 
 export const TABS = ["swap", "stake", "compute", "shield"];
