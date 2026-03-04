@@ -11,6 +11,39 @@ import TokenInput from "./components/TokenInput";
 import SwapInfo from "./components/SwapInfo";
 import { InfoRow } from "./components/SwapInfo";
 import AIRiskPanel from "./components/AIRiskPanel";
+import StakePanel from "./components/StakePanel";
+import ComputePanel from "./components/ComputePanel";
+
+const TAB_LABELS = {
+  swap: "Swap",
+  stake: "Stake",
+  compute: "Compute",
+  shield: "Privacy",
+};
+
+const TAB_ICONS = {
+  swap: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12M17 20l4-4M17 20l-4-4"/>
+    </svg>
+  ),
+  stake: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  ),
+  compute: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M9 9h6M9 12h6M9 15h4" />
+    </svg>
+  ),
+  shield: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" opacity="0.8">
+      <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+    </svg>
+  ),
+};
 
 export default function DoubleLight() {
   const {
@@ -27,11 +60,11 @@ export default function DoubleLight() {
   const [fromAmt, setFromAmt] = useState("");
   const [shieldToken, setShieldToken] = useState(DEFAULT_TOKENS[0]);
   const [shieldAmt, setShieldAmt] = useState("");
+  const [shieldMode, setShieldMode] = useState("shield");
   const [modal, setModal] = useState({ open: false, target: null });
   const [processing, setProcessing] = useState(false);
   const [shielded, setShielded] = useState(false);
 
-  // Merge live RAI balance into tokens
   const tokens = useMemo(() => {
     return DEFAULT_TOKENS.map((t) =>
       t.symbol === "RAI" ? { ...t, balance: raiBalance } : { ...t, balance: "0.00" }
@@ -75,8 +108,8 @@ export default function DoubleLight() {
     const delay = tab === "swap" ? 2200 : 2800;
     setTimeout(() => {
       setProcessing(false);
-      if (tab === "shield") setShielded(true);
-      if (tab === "unshield") setShielded(false);
+      if (shieldMode === "shield") setShielded(true);
+      if (shieldMode === "unshield") setShielded(false);
     }, delay);
   };
 
@@ -86,9 +119,7 @@ export default function DoubleLight() {
     ? "Connect Wallet"
     : tab === "swap"
     ? `Swap ${fromToken.symbol} \u2192 ${toToken.symbol}`
-    : tab === "shield"
-    ? `Shield ${shieldToken.symbol}`
-    : `Unshield ${shieldToken.symbol}`;
+    : `${shieldMode === "shield" ? "Shield" : "Unshield"} ${shieldToken.symbol}`;
 
   return (
     <div
@@ -118,6 +149,7 @@ export default function DoubleLight() {
         ::-webkit-scrollbar { width: 4px }
         ::-webkit-scrollbar-thumb { background: rgba(0,229,160,0.15); border-radius: 4px }
         input::placeholder { color: #15362a }
+        textarea::placeholder { color: #15362a }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none }
 
         @media (max-width: 540px) {
@@ -125,7 +157,7 @@ export default function DoubleLight() {
           .dl-header { padding: 12px 16px !important }
           .dl-header-brand { font-size: 17px !important }
           .dl-tabs { overflow-x: auto; gap: 0 !important }
-          .dl-tabs button { padding: 8px 18px !important; font-size: 12px !important }
+          .dl-tabs button { padding: 8px 14px !important; font-size: 11px !important }
           .dl-main { padding-top: 28px !important }
           .dl-footer-links { gap: 12px !important }
           .dl-footer-links a { font-size: 10px !important }
@@ -140,7 +172,6 @@ export default function DoubleLight() {
 
       <NeuralMesh />
 
-      {/* Ambient radials */}
       <div style={{ position: "fixed", top: "-35%", left: "50%", transform: "translateX(-50%)", width: "1000px", height: "1000px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,229,160,0.04) 0%, transparent 55%)", pointerEvents: "none" }} />
       <div style={{ position: "fixed", bottom: "-40%", right: "-10%", width: "700px", height: "700px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,179,125,0.02) 0%, transparent 55%)", pointerEvents: "none" }} />
 
@@ -156,7 +187,6 @@ export default function DoubleLight() {
         disconnect={disconnect}
       />
 
-      {/* ==================== MAIN ==================== */}
       <main
         className="dl-main"
         style={{
@@ -180,20 +210,22 @@ export default function DoubleLight() {
               key={t}
               onClick={() => setTab(t)}
               style={{
-                padding: "9px 26px", borderRadius: "13px", border: "none",
+                padding: "9px 20px", borderRadius: "13px", border: "none",
                 background: tab === t ? "rgba(0,229,160,0.1)" : "transparent",
                 color: tab === t ? "#00E5A0" : "#2a5c47",
-                fontFamily: "Outfit", fontWeight: 600, fontSize: "13px",
+                fontFamily: "Outfit", fontWeight: 600, fontSize: "12px",
                 cursor: "pointer", transition: "all .2s",
-                textTransform: "capitalize", whiteSpace: "nowrap",
+                whiteSpace: "nowrap",
+                display: "flex", alignItems: "center", gap: "6px",
               }}
             >
-              {t === "swap" ? "Swap" : t === "shield" ? "Shield" : "Unshield"}
+              {TAB_ICONS[t]}
+              {TAB_LABELS[t]}
             </button>
           ))}
         </div>
 
-        {/* ==================== CARD ==================== */}
+        {/* CARD */}
         <div
           className="dl-card"
           style={{
@@ -207,7 +239,8 @@ export default function DoubleLight() {
             boxShadow: "inset 0 1px 0 rgba(0,229,160,0.04), 0 0 0 1px rgba(0,229,160,0.03)",
           }}
         >
-          {tab === "swap" ? (
+          {/* SWAP */}
+          {tab === "swap" && (
             <>
               <TokenInput
                 label="You pay"
@@ -217,7 +250,6 @@ export default function DoubleLight() {
                 onTokenClick={() => setModal({ open: true, target: "from" })}
               />
 
-              {/* Swap direction */}
               <div style={{ display: "flex", justifyContent: "center", margin: "-10px 0", position: "relative", zIndex: 2 }}>
                 <button
                   onClick={swapDirection}
@@ -225,7 +257,7 @@ export default function DoubleLight() {
                     width: "40px", height: "40px", borderRadius: "12px",
                     background: "linear-gradient(135deg, #081c14, #112e22)",
                     border: "1px solid rgba(0,229,160,0.12)",
-                    color: "#00E5A0", fontSize: "14px", cursor: "pointer",
+                    color: "#00E5A0", cursor: "pointer",
                     transition: "all .3s",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
@@ -233,12 +265,10 @@ export default function DoubleLight() {
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "rotate(180deg)";
                     e.currentTarget.style.borderColor = "rgba(0,229,160,0.3)";
-                    e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,229,160,0.15)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "rotate(0)";
                     e.currentTarget.style.borderColor = "rgba(0,229,160,0.12)";
-                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.3)";
                   }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -259,57 +289,98 @@ export default function DoubleLight() {
 
               {fromAmt && <SwapInfo from={fromTokenLive} to={toTokenLive} shielded={shielded} />}
               <AIRiskPanel fromToken={fromTokenLive} toToken={toTokenLive} amount={fromAmt} />
-            </>
-          ) : (
-            <>
-              {/* Shield / Unshield info */}
-              <div
+
+              <button
+                onClick={execAction}
+                disabled={processing}
                 style={{
-                  textAlign: "center", marginBottom: "18px", padding: "22px 20px",
-                  background: tab === "shield" ? "rgba(0,229,160,0.02)" : "rgba(255,200,50,0.02)",
-                  borderRadius: "18px",
-                  border: `1px solid ${tab === "shield" ? "rgba(0,229,160,0.06)" : "rgba(255,200,50,0.06)"}`,
+                  width: "100%", marginTop: "18px", padding: "16px",
+                  borderRadius: "16px", border: "none",
+                  background: processing ? "rgba(0,229,160,0.04)" : !wallet ? "linear-gradient(135deg, #00E5A0, #00B37D)" : "linear-gradient(135deg, #00E5A0, #00C48E)",
+                  color: processing ? "#2a5c47" : "#050b08",
+                  fontFamily: "Outfit", fontWeight: 700, fontSize: "15px",
+                  cursor: processing ? "not-allowed" : "pointer",
+                  transition: "all .25s", letterSpacing: "0.3px",
+                  animation: !processing && wallet ? "btnPulse 3s ease infinite" : "none",
+                  boxShadow: !processing ? "0 4px 20px rgba(0,229,160,0.15)" : "none",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                 }}
+                onMouseEnter={(e) => { if (!processing) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,229,160,0.25)"; } }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,229,160,0.15)"; }}
               >
-                <div style={{ marginBottom: "10px" }}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill={tab === "shield" ? "#00E5A0" : "#FFD54F"} opacity="0.7">
-                    {tab === "shield"
-                      ? <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
-                      : <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                    }
-                  </svg>
-                </div>
-                <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "17px", color: "#e6fff5", marginBottom: "5px" }}>
-                  {tab === "shield" ? "Shield Tokens" : "Unshield Tokens"}
+                {processing && <div style={{ width: "16px", height: "16px", border: "2px solid rgba(0,229,160,0.2)", borderTop: "2px solid #00E5A0", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
+                {actionLabel}
+              </button>
+            </>
+          )}
+
+          {/* STAKE */}
+          {tab === "stake" && <StakePanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} />}
+
+          {/* COMPUTE */}
+          {tab === "compute" && <ComputePanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} />}
+
+          {/* PRIVACY */}
+          {tab === "shield" && (
+            <>
+              <div style={{ display: "flex", background: "rgba(0,229,160,0.02)", borderRadius: "12px", padding: "3px", marginBottom: "16px", border: "1px solid rgba(0,229,160,0.05)" }}>
+                {["shield", "unshield"].map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setShieldMode(mode)}
+                    style={{
+                      flex: 1, padding: "8px", borderRadius: "10px", border: "none",
+                      background: shieldMode === mode ? "rgba(0,229,160,0.1)" : "transparent",
+                      color: shieldMode === mode ? "#00E5A0" : "#2a5c47",
+                      fontFamily: "Outfit", fontWeight: 600, fontSize: "12px",
+                      cursor: "pointer", transition: "all .2s",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+                    }}
+                  >
+                    {mode === "shield" ? (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" opacity="0.8"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+                    ) : (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" opacity="0.8"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    )}
+                    {mode === "shield" ? "Shield" : "Unshield"}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{
+                textAlign: "center", marginBottom: "16px", padding: "18px 20px",
+                background: shieldMode === "shield" ? "rgba(0,229,160,0.02)" : "rgba(255,200,50,0.02)",
+                borderRadius: "16px",
+                border: `1px solid ${shieldMode === "shield" ? "rgba(0,229,160,0.06)" : "rgba(255,200,50,0.06)"}`,
+              }}>
+                <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "15px", color: "#e6fff5", marginBottom: "5px" }}>
+                  {shieldMode === "shield" ? "Shield Tokens" : "Unshield Tokens"}
                 </div>
                 <div style={{ fontSize: "12px", color: "#2a5c47", lineHeight: 1.6, maxWidth: "300px", margin: "0 auto", fontFamily: "Manrope" }}>
-                  {tab === "shield"
+                  {shieldMode === "shield"
                     ? "Deposit tokens into the privacy pool. Your balance becomes untraceable on Republic AI."
                     : "Withdraw from the privacy pool to a public wallet address."}
                 </div>
               </div>
 
               <TokenInput
-                label={tab === "shield" ? "Amount to shield" : "Amount to unshield"}
+                label={shieldMode === "shield" ? "Amount to shield" : "Amount to unshield"}
                 token={shieldTokenLive}
                 amount={shieldAmt}
                 onChange={setShieldAmt}
                 onTokenClick={() => setModal({ open: true, target: "shield" })}
               />
 
-              {tab === "unshield" && (
+              {shieldMode === "unshield" && (
                 <div style={{ marginTop: "14px" }}>
-                  <div style={{ fontSize: "12px", color: "#2a5c47", fontWeight: 500, marginBottom: "6px", fontFamily: "Manrope" }}>
-                    Recipient Address
-                  </div>
+                  <div style={{ fontSize: "12px", color: "#2a5c47", fontWeight: 500, marginBottom: "6px", fontFamily: "Manrope" }}>Recipient Address</div>
                   <input
                     placeholder="rai1..."
                     style={{
                       width: "100%", background: "rgba(0,229,160,0.02)",
                       border: "1px solid rgba(0,229,160,0.06)", borderRadius: "14px",
                       padding: "14px 16px", color: "#e6fff5", fontSize: "13px",
-                      fontFamily: "JetBrains Mono", outline: "none",
-                      transition: "border-color 0.2s",
+                      fontFamily: "JetBrains Mono", outline: "none", transition: "border-color 0.2s",
                     }}
                     onFocus={(e) => (e.target.style.borderColor = "rgba(0,229,160,0.2)")}
                     onBlur={(e) => (e.target.style.borderColor = "rgba(0,229,160,0.06)")}
@@ -321,59 +392,35 @@ export default function DoubleLight() {
               )}
 
               {shieldAmt && (
-                <div
-                  style={{
-                    marginTop: "14px", padding: "14px 16px",
-                    background: "rgba(0,229,160,0.015)", borderRadius: "14px",
-                    border: "1px solid rgba(0,229,160,0.05)",
-                  }}
-                >
+                <div style={{ marginTop: "14px", padding: "14px 16px", background: "rgba(0,229,160,0.015)", borderRadius: "14px", border: "1px solid rgba(0,229,160,0.05)" }}>
                   <InfoRow label="Privacy Fee" value="0.25%" />
                   <InfoRow label="Gas (RAI)" value="~0.001 RAI" />
                 </div>
               )}
+
+              <button
+                onClick={execAction}
+                disabled={processing}
+                style={{
+                  width: "100%", marginTop: "16px", padding: "16px",
+                  borderRadius: "16px", border: "none",
+                  background: processing ? "rgba(0,229,160,0.04)" : !wallet ? "linear-gradient(135deg, #00E5A0, #00B37D)" : "linear-gradient(135deg, #00E5A0, #00C48E)",
+                  color: processing ? "#2a5c47" : "#050b08",
+                  fontFamily: "Outfit", fontWeight: 700, fontSize: "15px",
+                  cursor: processing ? "not-allowed" : "pointer",
+                  transition: "all .25s",
+                  boxShadow: !processing ? "0 4px 20px rgba(0,229,160,0.15)" : "none",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                }}
+              >
+                {processing && <div style={{ width: "16px", height: "16px", border: "2px solid rgba(0,229,160,0.2)", borderTop: "2px solid #00E5A0", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
+                {actionLabel}
+              </button>
             </>
           )}
-
-          {/* ACTION BUTTON */}
-          <button
-            onClick={execAction}
-            disabled={processing}
-            style={{
-              width: "100%", marginTop: "18px", padding: "16px",
-              borderRadius: "16px", border: "none",
-              background: processing
-                ? "rgba(0,229,160,0.04)"
-                : !wallet
-                ? "linear-gradient(135deg, #00E5A0, #00B37D)"
-                : "linear-gradient(135deg, #00E5A0, #00C48E)",
-              color: processing ? "#2a5c47" : "#050b08",
-              fontFamily: "Outfit", fontWeight: 700, fontSize: "15px",
-              cursor: processing ? "not-allowed" : "pointer",
-              transition: "all .25s", letterSpacing: "0.3px",
-              animation: !processing && wallet ? "btnPulse 3s ease infinite" : "none",
-              boxShadow: !processing ? "0 4px 20px rgba(0,229,160,0.15)" : "none",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-            }}
-            onMouseEnter={(e) => {
-              if (!processing) {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,229,160,0.25)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,229,160,0.15)";
-            }}
-          >
-            {processing && (
-              <div style={{ width: "16px", height: "16px", border: "2px solid rgba(0,229,160,0.2)", borderTop: "2px solid #00E5A0", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-            )}
-            {actionLabel}
-          </button>
         </div>
 
-        {/* Powered by badge */}
+        {/* Powered by */}
         <div style={{
           marginTop: "20px", display: "flex", alignItems: "center", gap: "6px",
           padding: "6px 14px", borderRadius: "10px",
@@ -385,14 +432,10 @@ export default function DoubleLight() {
           </span>
         </div>
 
-        {/* Footer links */}
         <div className="dl-footer-links" style={{ marginTop: "20px", display: "flex", gap: "24px", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
           {FOOTER_LINKS.map(([label, href]) => (
             <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
+              key={label} href={href} target="_blank" rel="noopener noreferrer"
               style={{ fontSize: "11px", color: "#1e4a38", fontFamily: "JetBrains Mono", textDecoration: "none", transition: "color .2s" }}
               onMouseEnter={(e) => (e.target.style.color = "#00E5A0")}
               onMouseLeave={(e) => (e.target.style.color = "#1e4a38")}
@@ -402,7 +445,7 @@ export default function DoubleLight() {
           ))}
         </div>
         <div style={{ marginTop: "8px", fontSize: "10px", color: "#0f2219", fontFamily: "JetBrains Mono", textAlign: "center" }}>
-          doublelight.fun · v0.1.0-testnet
+          doublelight.fun · v0.2.0-testnet
         </div>
       </main>
 

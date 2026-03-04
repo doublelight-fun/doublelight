@@ -40,7 +40,7 @@ export const DEFAULT_TOKENS = [
   { symbol: "WBTC", name: "Wrapped BTC",  icon: "\u20BF", color: "#F7931A", decimals: 8 },
 ];
 
-export const TABS = ["swap", "shield", "unshield"];
+export const TABS = ["swap", "stake", "compute", "shield"];
 
 export const FOOTER_LINKS = [
   ["Republic AI Network", "https://republicai.io"],
