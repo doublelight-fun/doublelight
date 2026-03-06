@@ -54,7 +54,7 @@ const TAB_ICONS = {
 
 export default function DoubleLight() {
   const {
-    wallet, raiBalance, toast,
+    wallet, raiBalance, tokenBalances, toast,
     showWalletMenu, setShowWalletMenu,
     showWalletPicker, setShowWalletPicker,
     walletMenuRef,
@@ -76,10 +76,12 @@ export default function DoubleLight() {
   const [swapError, setSwapError] = useState(null);
 
   const tokens = useMemo(() => {
-    return DEFAULT_TOKENS.map((t) =>
-      t.symbol === "RAI" ? { ...t, balance: raiBalance } : { ...t, balance: "0.00" }
-    );
-  }, [raiBalance]);
+    return DEFAULT_TOKENS.map((t) => {
+      if (t.symbol === "RAI") return { ...t, balance: raiBalance };
+      if (tokenBalances && tokenBalances[t.symbol]) return { ...t, balance: tokenBalances[t.symbol] };
+      return { ...t, balance: "0.00" };
+    });
+  }, [raiBalance, tokenBalances]);
 
   const fromTokenLive = useMemo(
     () => (fromToken.symbol === "RAI" ? { ...fromToken, balance: raiBalance } : fromToken),

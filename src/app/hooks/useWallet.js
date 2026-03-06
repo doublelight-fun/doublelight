@@ -10,6 +10,7 @@ export function useWallet() {
 
   const [wallet, setWallet] = useState(null);
   const [raiBalance, setRaiBalance] = useState("0.00");
+  const [tokenBalances, setTokenBalances] = useState({});
   const [showWalletMenu, setShowWalletMenu] = useState(false);
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [toast, setToast] = useState(null);
@@ -142,6 +143,7 @@ export function useWallet() {
         setWallet({ address: addr, type: "keplr" });
         const bal = await fetchCosmosBalance(addr);
         setRaiBalance(bal);
+        fetchTokenBalances(evmAddr || addr);
         showToast("success", "Connected to Republic AI Testnet");
       }
     } catch (err) {
@@ -199,6 +201,33 @@ export function useWallet() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+
+  // Fetch ERC-20 token balances
+  const fetchTokenBalances = async (evmAddr) => {
+    if (!evmAddr) return;
+    try {
+      const { ethers } = await import("ethers");
+      const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
+      const tokens = {
+        WRAI: { address: "0x64B5862c4F875BE29ef86423d44C38d4a536971A", decimals: 18 },
+        USDC: { address: "0x4056fbCc1B167deaeF2cAB801C2599BF97C69862", decimals: 6 },
+        USDT: { address: "0x57605eaaEe8708701d31dE3467F715c8646C9fB1", decimals: 6 },
+        WETH: { address: "0x4d8f700822086149863a848dccBa953924DAf51B", decimals: 18 },
+        WBTC: { address: "0x4F291E2CaE9428A96E32FfbA240e7B4a3948AA1F", decimals: 8 },
+      };
+      const abi = ["function balanceOf(address) view returns (uint256)"];
+      const balances = {};
+      for (const [symbol, info] of Object.entries(tokens)) {
+        try {
+          const contract = new ethers.Contract(info.address, abi, provider);
+          const bal = await contract.balanceOf(evmAddr);
+          balances[symbol] = ethers.formatUnits(bal, info.decimals);
+        } catch { balances[symbol] = "0.00"; }
+      }
+      setTokenBalances(balances);
+    } catch (err) { console.error("Token balance fetch error:", err); }
+  };
 
   return {
     wallet,
