@@ -73,6 +73,7 @@ export default function DoubleLight() {
   const [processing, setProcessing] = useState(false);
   const [shielded, setShielded] = useState(false);
   const [swapResult, setSwapResult] = useState(null);
+  const [slippage, setSlippage] = useState(0.5);
   const [swapError, setSwapError] = useState(null);
 
   const tokens = useMemo(() => {
@@ -286,7 +287,7 @@ export default function DoubleLight() {
                 </button>
               </div>
               <TokenInput label="You receive" token={toTokenLive} amount={receiveAmt} onChange={() => {}} onTokenClick={() => setModal({ open: true, target: "to" })} readOnly dimmed />
-              {fromAmt && <SwapInfo from={fromTokenLive} to={toTokenLive} shielded={shielded} />}
+              {fromAmt && <SwapInfo from={fromTokenLive} to={toTokenLive} shielded={shielded} fromAmt={fromAmt} receiveAmt={receiveAmt} slippage={slippage} setSlippage={setSlippage} />}
               <AIRiskPanel fromToken={fromTokenLive} toToken={toTokenLive} amount={fromAmt} />
 
               {swapResult && (
