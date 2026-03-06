@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/version-v0.3.0--testnet-00E5A0?style=flat-square&labelColor=040907" />
   <img src="https://img.shields.io/badge/network-Republic%20AI%20Testnet-00E5A0?style=flat-square&labelColor=040907" />
   <img src="https://img.shields.io/badge/status-live-00E5A0?style=flat-square&labelColor=040907" />
-  <img src="https://img.shields.io/badge/contracts-7%20deployed-00E5A0?style=flat-square&labelColor=040907" />
+  <img src="https://img.shields.io/badge/contracts-8%20deployed-00E5A0?style=flat-square&labelColor=040907" />
   <img src="https://img.shields.io/badge/license-MIT-2a5c47?style=flat-square&labelColor=040907" />
 </p>
 
@@ -52,7 +52,7 @@ All contracts are deployed and verified on **Republic AI Testnet (Chain ID: 7770
 
 | Token | Symbol | Address | Decimals | Initial Supply |
 |-------|--------|---------|----------|---------------|
-| Wrapped RAI | WRAI | `0xBCc87F9A4A7C637A27eCebbb1F58b6C2dd72F032` | 18 | 1,000,000 |
+| Wrapped RAI | WRAI | `0x64B5862c4F875BE29ef86423d44C38d4a536971A` | 18 | 1,000,000 (old) |
 | USD Coin | USDC | `0x4056fbCc1B167deaeF2cAB801C2599BF97C69862` | 6 | 10,000,000 |
 | Tether USD | USDT | `0x57605eaaEe8708701d31dE3467F715c8646C9fB1` | 6 | 10,000,000 |
 | Wrapped Ether | WETH | `0x4d8f700822086149863a848dccBa953924DAf51B` | 18 | 5,000 |
@@ -211,6 +211,8 @@ node scripts/deploy-amm.cjs       # Deploy AMM + seed liquidity
 - [x] Seed 5 liquidity pools
 - [x] Real on-chain swap via AMM
 - [x] Liquidity tab (add/remove)
+- [x] WRAI Wrapper contract (RAI ↔ WRAI)
+- [x] Auto wrap/unwrap in swap flow
 - [ ] Connect Hyperscale Compute for real inference
 - [ ] AI price prediction model (PriceSeer-v1)
 - [ ] Fraud detection model (GuardNet-v1)
