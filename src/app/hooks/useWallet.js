@@ -233,6 +233,7 @@ export function useWallet() {
     raiBalance,
     tokenBalances,
     fetchTokenBalances,
+    refreshAll,
     toast,
     showWalletMenu,
     setShowWalletMenu,
