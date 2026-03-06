@@ -21,7 +21,7 @@ export default function Header({
     <header
       className="dl-header"
       style={{
-        position: "sticky", top: 0, zIndex: 20,
+        position: "sticky", className: "dl-header", top: 0, zIndex: 20,
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "16px 32px",
         borderBottom: "1px solid rgba(0,229,160,0.05)",

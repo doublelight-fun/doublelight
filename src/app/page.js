@@ -248,11 +248,21 @@ export default function DoubleLight() {
         textarea::placeholder { color: #15362a }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none }
         @media (max-width: 540px) {
-          .dl-card { width: 94vw !important; padding: 18px !important }
-          .dl-header { padding: 12px 16px !important }
-          .dl-tabs { overflow-x: auto; gap: 0 !important }
-          .dl-tabs button { padding: 8px 12px !important; font-size: 10px !important }
-          .dl-main { padding-top: 28px !important }
+          .dl-card { width: 96vw !important; padding: 16px !important; border-radius: 18px !important }
+          .dl-header { padding: 10px 12px !important }
+          .dl-header-brand { font-size: 15px !important }
+          .dl-tabs { overflow-x: auto; gap: 0 !important; width: 96vw; justify-content: flex-start; padding: 3px !important }
+          .dl-tabs button { padding: 7px 12px !important; font-size: 10px !important; gap: 3px !important }
+          .dl-tabs button svg { width: 10px !important; height: 10px !important }
+          .dl-main { padding-top: 20px !important; padding-bottom: 40px !important }
+          .dl-footer-links { gap: 12px !important }
+          .dl-footer-links a { font-size: 9px !important }
+        }
+        @media (max-width: 400px) {
+          .dl-card { width: 98vw !important; padding: 12px !important }
+          .dl-tabs button { padding: 6px 8px !important; font-size: 9px !important }
+          .dl-tabs button svg { display: none !important }
+          .dl-header-subtitle { display: none !important }
         }
       `}</style>
 
