@@ -10,7 +10,7 @@ const POOLS = [
   { a: "USDC", b: "USDT" },
 ];
 
-export default function LiquidityPanel({ wallet, onConnect, getProvider }) {
+export default function LiquidityPanel({ wallet, onConnect, getProvider, onSuccess }) {
   const [mode, setMode] = useState("add");
   const [tokenA, setTokenA] = useState(SWAPPABLE[0]);
   const [tokenB, setTokenB] = useState(SWAPPABLE[2]);
@@ -40,6 +40,7 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider }) {
       const receipt = await tx.wait();
       setResult({ type: "add", tokenA: tokenA.symbol, tokenB: tokenB.symbol, amountA, amountB, txHash: receipt.hash });
       setAmountA(""); setAmountB("");
+      if (onSuccess) onSuccess();
     } catch (err) { setError(err.reason || err.message || "Transaction failed"); }
     setProcessing(false);
   };
@@ -58,6 +59,7 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider }) {
       const receipt = await tx.wait();
       setResult({ type: "remove", tokenA: tokenA.symbol, tokenB: tokenB.symbol, lpAmount, txHash: receipt.hash });
       setLpAmount("");
+      if (onSuccess) onSuccess();
     } catch (err) { setError(err.reason || err.message || "Transaction failed"); }
     setProcessing(false);
   };

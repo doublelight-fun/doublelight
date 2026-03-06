@@ -89,6 +89,17 @@ export default function DoubleLight() {
     return "0.00";
   }, [raiBalance, tokenBalances]);
 
+  const refreshBalances = useCallback(async () => {
+    if (!wallet?.address) return;
+    if (fetchTokenBalances) fetchTokenBalances(wallet.address);
+    try {
+      const { ethers } = await import("ethers");
+      const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
+      const bal = await provider.getBalance(wallet.address);
+      // raiBalance is from hook, we trigger refetch via tokenBalances
+    } catch {}
+  }, [wallet, fetchTokenBalances]);
+
   const fromTokenLive = useMemo(
     () => ({ ...fromToken, balance: getBalance(fromToken) }),
     [fromToken, getBalance]
@@ -299,11 +310,11 @@ export default function DoubleLight() {
           )}
 
           {tab === "liquidity" && (
-            <LiquidityPanel wallet={wallet} onConnect={() => setShowWalletPicker(true)}
+            <LiquidityPanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} onSuccess={refreshBalances}
               getProvider={async () => { const { ethers } = await import("ethers"); return new ethers.BrowserProvider(window.ethereum); }} />
           )}
 
-          {tab === "stake" && <StakePanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} />}
+          {tab === "stake" && <StakePanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} onSuccess={refreshBalances} />}
           {tab === "compute" && <ComputePanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} />}
 
           {tab === "shield" && (
