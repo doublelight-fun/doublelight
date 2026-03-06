@@ -62,7 +62,7 @@ export default function DoubleLight() {
   } = useWallet();
 
   const [tab, setTab] = useState("swap");
-  const [fromToken, setFromToken] = useState(DEFAULT_TOKENS[1]); // WRAI default
+  const [fromToken, setFromToken] = useState(DEFAULT_TOKENS[0]); // RAI default
   const [toToken, setToToken] = useState(DEFAULT_TOKENS[2]); // USDC
   const [fromAmt, setFromAmt] = useState("");
   const [receiveAmt, setReceiveAmt] = useState("");
@@ -95,23 +95,28 @@ export default function DoubleLight() {
   );
 
   // Fetch real quote from AMM
+  const WRAI_ADDRESS = "0x64B5862c4F875BE29ef86423d44C38d4a536971A";
+  const WRAI_ABI = [
+    "function deposit() payable",
+    "function withdraw(uint256 amount)",
+    "function balanceOf(address) view returns (uint256)",
+    "function approve(address spender, uint256 amount) returns (bool)",
+  ];
+
   const fetchQuote = useCallback(async (amt) => {
-    if (!amt || parseFloat(amt) <= 0 || !fromToken.address || !toToken.address) {
-      setReceiveAmt("");
-      return;
-    }
+    if (!amt || parseFloat(amt) <= 0) { setReceiveAmt(""); return; }
     try {
       const { ethers } = await import("ethers");
       const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
       const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, provider);
+      const addrIn = fromToken.symbol === "RAI" ? WRAI_ADDRESS : fromToken.address;
+      const addrOut = toToken.symbol === "RAI" ? WRAI_ADDRESS : toToken.address;
+      if (!addrIn || !addrOut) { setReceiveAmt(""); return; }
       const amtIn = ethers.parseUnits(amt, fromToken.decimals);
-      const out = await amm.getAmountOut(fromToken.address, toToken.address, amtIn);
+      const out = await amm.getAmountOut(addrIn, addrOut, amtIn);
       setReceiveAmt(ethers.formatUnits(out, toToken.decimals));
     } catch {
-      const simulated = fromToken.symbol === "WRAI"
-        ? (parseFloat(amt) * 2.45).toFixed(4)
-        : (parseFloat(amt) / 2.45).toFixed(4);
-      setReceiveAmt(simulated);
+      setReceiveAmt("...");
     }
   }, [fromToken, toToken]);
 
@@ -136,19 +141,39 @@ export default function DoubleLight() {
   // Real swap via AMM contract
   const execSwap = async () => {
     if (!wallet) { setShowWalletPicker(true); return; }
-    if (!fromAmt || !fromToken.address || !toToken.address) return;
+    if (!fromAmt) return;
     setProcessing(true); setSwapError(null); setSwapResult(null);
     try {
       const { ethers } = await import("ethers");
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const amtIn = ethers.parseUnits(fromAmt, fromToken.decimals);
-      const tokenContract = new ethers.Contract(fromToken.address, ERC20_ABI, signer);
+      let tokenInAddress = fromToken.symbol === "RAI" ? WRAI_ADDRESS : fromToken.address;
+      let tokenOutAddress = toToken.symbol === "RAI" ? WRAI_ADDRESS : toToken.address;
+      if (!tokenInAddress || !tokenOutAddress) { setSwapError("Token not supported"); setProcessing(false); return; }
+      // Auto-wrap: RAI → WRAI
+      if (fromToken.symbol === "RAI") {
+        const wrai = new ethers.Contract(WRAI_ADDRESS, WRAI_ABI, signer);
+        const wrapTx = await wrai.deposit({ value: amtIn, gasLimit: 200000 });
+        await wrapTx.wait();
+      }
+      // Approve
+      const tokenContract = new ethers.Contract(tokenInAddress, ERC20_ABI, signer);
       let tx = await tokenContract.approve(AMM_ADDRESS, amtIn, { gasLimit: 200000 });
       await tx.wait();
+      // Swap
       const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, signer);
-      tx = await amm.swap(fromToken.address, toToken.address, amtIn, { gasLimit: 500000 });
+      tx = await amm.swap(tokenInAddress, tokenOutAddress, amtIn, { gasLimit: 500000 });
       const receipt = await tx.wait();
+      // Auto-unwrap: WRAI → RAI
+      if (toToken.symbol === "RAI") {
+        const wrai = new ethers.Contract(WRAI_ADDRESS, WRAI_ABI, signer);
+        const wraiBalance = await wrai.balanceOf(await signer.getAddress());
+        if (wraiBalance > 0n) {
+          const unwrapTx = await wrai.withdraw(wraiBalance, { gasLimit: 200000 });
+          await unwrapTx.wait();
+        }
+      }
       setSwapResult({ txHash: receipt.hash, amountIn: fromAmt, tokenIn: fromToken.symbol, amountOut: receiveAmt, tokenOut: toToken.symbol });
       setFromAmt(""); setReceiveAmt("");
     } catch (err) {
