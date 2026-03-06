@@ -10,7 +10,7 @@ const POOLS = [
   { a: "USDC", b: "USDT" },
 ];
 
-export default function LiquidityPanel({ wallet, onConnect, getProvider, onSuccess }) {
+export default function LiquidityPanel({ wallet, onConnect, getProvider, onSuccess, tokenBalances }) {
   const [mode, setMode] = useState("add");
   const [tokenA, setTokenA] = useState(SWAPPABLE[0]);
   const [tokenB, setTokenB] = useState(SWAPPABLE[2]);
@@ -112,7 +112,7 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
       {mode === "add" ? (
         <>
           <div style={{ marginBottom: "8px" }}>
-            <div style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "Manrope", marginBottom: "4px" }}>{tokenA.symbol} Amount</div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}><span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "Manrope" }}>{tokenA.symbol} Amount</span><span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>Bal: {tokenBalances?.[tokenA.symbol] ? parseFloat(tokenBalances[tokenA.symbol]).toFixed(4) : "0.00"}</span></div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(0,229,160,0.025)", border: "1px solid rgba(0,229,160,0.08)", borderRadius: "14px", padding: "12px 16px" }}>
               <input type="text" placeholder="0.0" value={amountA} onChange={(e) => setAmountA(e.target.value)}
                 style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "#e6fff5", fontSize: "22px", fontFamily: "Outfit", fontWeight: 700 }} />
@@ -123,7 +123,7 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a5c47" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
           </div>
           <div style={{ marginBottom: "14px" }}>
-            <div style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "Manrope", marginBottom: "4px" }}>{tokenB.symbol} Amount</div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}><span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "Manrope" }}>{tokenB.symbol} Amount</span><span style={{ fontSize: "11px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>Bal: {tokenBalances?.[tokenB.symbol] ? parseFloat(tokenBalances[tokenB.symbol]).toFixed(4) : "0.00"}</span></div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(0,229,160,0.025)", border: "1px solid rgba(0,229,160,0.08)", borderRadius: "14px", padding: "12px 16px" }}>
               <input type="text" placeholder="0.0" value={amountB} onChange={(e) => setAmountB(e.target.value)}
                 style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "#e6fff5", fontSize: "22px", fontFamily: "Outfit", fontWeight: 700 }} />

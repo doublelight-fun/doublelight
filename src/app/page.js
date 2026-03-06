@@ -297,7 +297,7 @@ export default function DoubleLight() {
           )}
 
           {tab === "liquidity" && (
-            <LiquidityPanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} onSuccess={refreshBalances}
+            <LiquidityPanel wallet={wallet} onConnect={() => setShowWalletPicker(true)} onSuccess={refreshBalances} tokenBalances={tokenBalances}
               getProvider={async () => { const { ethers } = await import("ethers"); return new ethers.BrowserProvider(window.ethereum); }} />
           )}
 
