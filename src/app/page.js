@@ -121,6 +121,9 @@ export default function DoubleLight() {
       const { ethers } = await import("ethers");
       const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
       const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, provider);
+      // RAI <-> WRAI is 1:1
+      const isWrapUnwrap = (fromToken.symbol === "RAI" && toToken.symbol === "WRAI") || (fromToken.symbol === "WRAI" && toToken.symbol === "RAI");
+      if (isWrapUnwrap) { setReceiveAmt(parseFloat(amt).toFixed(6)); return; }
       const addrIn = fromToken.symbol === "RAI" ? WRAI_ADDRESS : fromToken.address;
       const addrOut = toToken.symbol === "RAI" ? WRAI_ADDRESS : toToken.address;
       if (!addrIn || !addrOut) { setReceiveAmt(""); return; }
@@ -163,27 +166,38 @@ export default function DoubleLight() {
       let tokenInAddress = fromToken.symbol === "RAI" ? WRAI_ADDRESS : fromToken.address;
       let tokenOutAddress = toToken.symbol === "RAI" ? WRAI_ADDRESS : toToken.address;
       if (!tokenInAddress || !tokenOutAddress) { setSwapError("Token not supported"); setProcessing(false); return; }
-      // Auto-wrap: RAI → WRAI
-      if (fromToken.symbol === "RAI") {
-        const wrai = new ethers.Contract(WRAI_ADDRESS, WRAI_ABI, signer);
-        const wrapTx = await wrai.deposit({ value: amtIn, gasLimit: 200000 });
-        await wrapTx.wait();
-      }
-      // Approve
-      const tokenContract = new ethers.Contract(tokenInAddress, ERC20_ABI, signer);
-      let tx = await tokenContract.approve(AMM_ADDRESS, amtIn, { gasLimit: 200000 });
-      await tx.wait();
-      // Swap
-      const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, signer);
-      tx = await amm.swap(tokenInAddress, tokenOutAddress, amtIn, { gasLimit: 500000 });
-      const receipt = await tx.wait();
-      // Auto-unwrap: WRAI → RAI
-      if (toToken.symbol === "RAI") {
-        const wrai = new ethers.Contract(WRAI_ADDRESS, WRAI_ABI, signer);
-        const wraiBalance = await wrai.balanceOf(await signer.getAddress());
-        if (wraiBalance > 0n) {
-          const unwrapTx = await wrai.withdraw(wraiBalance, { gasLimit: 200000 });
-          await unwrapTx.wait();
+      const wrai = new ethers.Contract(WRAI_ADDRESS, WRAI_ABI, signer);
+      // Special case: RAI <-> WRAI is just wrap/unwrap
+      const isWrap = fromToken.symbol === "RAI" && toToken.symbol === "WRAI";
+      const isUnwrap = fromToken.symbol === "WRAI" && toToken.symbol === "RAI";
+      let receipt;
+      if (isWrap) {
+        const tx = await wrai.deposit({ value: amtIn, gasLimit: 200000 });
+        receipt = await tx.wait();
+      } else if (isUnwrap) {
+        const tx = await wrai.withdraw(amtIn, { gasLimit: 200000 });
+        receipt = await tx.wait();
+      } else {
+        // Auto-wrap: RAI → WRAI before swap
+        if (fromToken.symbol === "RAI") {
+          const wrapTx = await wrai.deposit({ value: amtIn, gasLimit: 200000 });
+          await wrapTx.wait();
+        }
+        // Approve
+        const tokenContract = new ethers.Contract(tokenInAddress, ERC20_ABI, signer);
+        let tx = await tokenContract.approve(AMM_ADDRESS, amtIn, { gasLimit: 200000 });
+        await tx.wait();
+        // Swap via AMM
+        const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, signer);
+        tx = await amm.swap(tokenInAddress, tokenOutAddress, amtIn, { gasLimit: 500000 });
+        receipt = await tx.wait();
+        // Auto-unwrap: if user wanted RAI out
+        if (toToken.symbol === "RAI") {
+          const wraiBalance = await wrai.balanceOf(await signer.getAddress());
+          if (wraiBalance > 0n) {
+            const unwrapTx = await wrai.withdraw(wraiBalance, { gasLimit: 200000 });
+            await unwrapTx.wait();
+          }
         }
       }
       setSwapResult({ txHash: receipt.hash, amountIn: fromAmt, tokenIn: fromToken.symbol, amountOut: receiveAmt, tokenOut: toToken.symbol });
