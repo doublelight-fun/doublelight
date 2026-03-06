@@ -54,7 +54,7 @@ const TAB_ICONS = {
 
 export default function DoubleLight() {
   const {
-    wallet, raiBalance, tokenBalances, toast,
+    wallet, raiBalance, tokenBalances, fetchTokenBalances, toast,
     showWalletMenu, setShowWalletMenu,
     showWalletPicker, setShowWalletPicker,
     walletMenuRef,
@@ -178,6 +178,14 @@ export default function DoubleLight() {
       }
       setSwapResult({ txHash: receipt.hash, amountIn: fromAmt, tokenIn: fromToken.symbol, amountOut: receiveAmt, tokenOut: toToken.symbol });
       setFromAmt(""); setReceiveAmt("");
+      // Refetch balances
+      if (wallet?.address) { fetchTokenBalances(wallet.address); }
+      try {
+        const { ethers } = await import("ethers");
+        const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
+        const bal = await provider.getBalance(wallet.address);
+        setRaiBalance(ethers.formatEther(bal).slice(0, 8));
+      } catch {}
     } catch (err) {
       setSwapError(err.reason || err.message || "Swap failed");
     }
