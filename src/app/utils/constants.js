@@ -17,20 +17,10 @@ export const REPUBLIC_CHAIN = {
     bech32PrefixConsAddr: "raivalcons",
     bech32PrefixConsPub: "raivalconspub",
   },
-  currencies: [
-    { coinDenom: "RAI", coinMinimalDenom: "arai", coinDecimals: 18 },
-  ],
-  feeCurrencies: [
-    { coinDenom: "RAI", coinMinimalDenom: "arai", coinDecimals: 18 },
-  ],
-  stakeCurrency: {
-    coinDenom: "RAI",
-    coinMinimalDenom: "arai",
-    coinDecimals: 18,
-  },
+  currencies: [{ coinDenom: "RAI", coinMinimalDenom: "arai", coinDecimals: 18 }],
+  feeCurrencies: [{ coinDenom: "RAI", coinMinimalDenom: "arai", coinDecimals: 18 }],
+  stakeCurrency: { coinDenom: "RAI", coinMinimalDenom: "arai", coinDecimals: 18 },
 };
-
-// Deployed token contract addresses (Republic AI Testnet)
 export const TOKEN_ADDRESSES = {
   WRAI: "0xBCc87F9A4A7C637A27eCebbb1F58b6C2dd72F032",
   USDC: "0x4056fbCc1B167deaeF2cAB801C2599BF97C69862",
@@ -38,8 +28,7 @@ export const TOKEN_ADDRESSES = {
   WETH: "0x4d8f700822086149863a848dccBa953924DAf51B",
   WBTC: "0x4F291E2CaE9428A96E32FfbA240e7B4a3948AA1F",
 };
-
-// ERC-20 ABI (minimal for balance + transfer)
+export const AMM_ADDRESS = "0x843dE781095d9436d4eA3c2fce76cd82fa49faC1";
 export const ERC20_ABI = [
   "function balanceOf(address) view returns (uint256)",
   "function decimals() view returns (uint8)",
@@ -49,21 +38,6 @@ export const ERC20_ABI = [
   "function allowance(address owner, address spender) view returns (uint256)",
   "function faucet(uint256 amount) external",
 ];
-
-// Default token list
-export const DEFAULT_TOKENS = [
-  { symbol: "RAI",  name: "Republic AI",  icon: "\u25C6", color: "#00E5A0", decimals: 18, address: null },
-  { symbol: "WRAI", name: "Wrapped RAI",  icon: "\u25C7", color: "#00C489", decimals: 18, address: TOKEN_ADDRESSES.WRAI },
-  { symbol: "USDC", name: "USD Coin",     icon: "\u25CE", color: "#2775CA", decimals: 6,  address: TOKEN_ADDRESSES.USDC },
-  { symbol: "USDT", name: "Tether",       icon: "\u20AE", color: "#50AF95", decimals: 6,  address: TOKEN_ADDRESSES.USDT },
-  { symbol: "WETH", name: "Wrapped ETH",  icon: "\u27E0", color: "#627EEA", decimals: 18, address: TOKEN_ADDRESSES.WETH },
-  { symbol: "WBTC", name: "Wrapped BTC",  icon: "\u20BF", color: "#F7931A", decimals: 8,  address: TOKEN_ADDRESSES.WBTC },
-];
-
-// DoubleLightAMM contract
-export const AMM_ADDRESS = "0x843dE781095d9436d4eA3c2fce76cd82fa49faC1";
-
-// AMM ABI (minimal)
 export const AMM_ABI = [
   "function swap(address tokenIn, address tokenOut, uint256 amountIn) returns (uint256)",
   "function addLiquidity(address tokenA, address tokenB, uint256 amountA, uint256 amountB) returns (uint256)",
@@ -72,9 +46,15 @@ export const AMM_ABI = [
   "function getPoolInfo(address tokenA, address tokenB) view returns (uint256 reserveA, uint256 reserveB, uint256 totalLP, bool exists)",
   "function getUserLP(address tokenA, address tokenB, address user) view returns (uint256)",
 ];
-
-export const TABS = ["swap", "stake", "compute", "shield"];
-
+export const DEFAULT_TOKENS = [
+  { symbol: "RAI",  name: "Republic AI",  icon: "\u25C6", color: "#00E5A0", decimals: 18, address: null },
+  { symbol: "WRAI", name: "Wrapped RAI",  icon: "\u25C7", color: "#00C489", decimals: 18, address: TOKEN_ADDRESSES.WRAI },
+  { symbol: "USDC", name: "USD Coin",     icon: "\u25CE", color: "#2775CA", decimals: 6,  address: TOKEN_ADDRESSES.USDC },
+  { symbol: "USDT", name: "Tether",       icon: "\u20AE", color: "#50AF95", decimals: 6,  address: TOKEN_ADDRESSES.USDT },
+  { symbol: "WETH", name: "Wrapped ETH",  icon: "\u27E0", color: "#627EEA", decimals: 18, address: TOKEN_ADDRESSES.WETH },
+  { symbol: "WBTC", name: "Wrapped BTC",  icon: "\u20BF", color: "#F7931A", decimals: 8,  address: TOKEN_ADDRESSES.WBTC },
+];
+export const TABS = ["swap", "liquidity", "stake", "compute", "shield"];
 export const FOOTER_LINKS = [
   ["Republic AI Network", "https://republicai.io"],
   ["Points Portal", "https://points.republicai.io/?ref=071B43"],
