@@ -228,6 +228,20 @@ export function useWallet() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const refreshAll = useCallback(async () => {
+    if (!wallet?.address) return;
+    try {
+      if (wallet.type === "evm") {
+        const bal = await fetchEvmBalance(wallet.address);
+        setRaiBalance(bal);
+      } else {
+        const bal = await fetchCosmosBalance(wallet.address);
+        setRaiBalance(bal);
+      }
+      await fetchTokenBalances(wallet.address);
+    } catch (err) { console.error("Refresh error:", err); }
+  }, [wallet, fetchEvmBalance, fetchCosmosBalance, fetchTokenBalances]);
+
   return {
     wallet,
     raiBalance,
