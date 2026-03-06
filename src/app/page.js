@@ -83,17 +83,23 @@ export default function DoubleLight() {
     });
   }, [raiBalance, tokenBalances]);
 
+  const getBalance = useCallback((token) => {
+    if (token.symbol === "RAI") return raiBalance;
+    if (tokenBalances && tokenBalances[token.symbol]) return parseFloat(tokenBalances[token.symbol]).toFixed(4);
+    return "0.00";
+  }, [raiBalance, tokenBalances]);
+
   const fromTokenLive = useMemo(
-    () => (fromToken.symbol === "RAI" ? { ...fromToken, balance: raiBalance } : fromToken),
-    [fromToken, raiBalance]
+    () => ({ ...fromToken, balance: getBalance(fromToken) }),
+    [fromToken, getBalance]
   );
   const toTokenLive = useMemo(
-    () => (toToken.symbol === "RAI" ? { ...toToken, balance: raiBalance } : toToken),
-    [toToken, raiBalance]
+    () => ({ ...toToken, balance: getBalance(toToken) }),
+    [toToken, getBalance]
   );
   const shieldTokenLive = useMemo(
-    () => (shieldToken.symbol === "RAI" ? { ...shieldToken, balance: raiBalance } : shieldToken),
-    [shieldToken, raiBalance]
+    () => ({ ...shieldToken, balance: getBalance(shieldToken) }),
+    [shieldToken, getBalance]
   );
 
   // Fetch real quote from AMM
@@ -116,7 +122,7 @@ export default function DoubleLight() {
       if (!addrIn || !addrOut) { setReceiveAmt(""); return; }
       const amtIn = ethers.parseUnits(amt, fromToken.decimals);
       const out = await amm.getAmountOut(addrIn, addrOut, amtIn);
-      setReceiveAmt(ethers.formatUnits(out, toToken.decimals));
+      const raw = ethers.formatUnits(out, toToken.decimals); setReceiveAmt(parseFloat(raw).toFixed(6));
     } catch {
       setReceiveAmt("...");
     }
