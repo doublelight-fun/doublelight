@@ -29,8 +29,12 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
       const { ethers } = await import("ethers");
       const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
       const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, provider);
-      const [resA, resB, totalLP, exists] = await amm.getPoolInfo(tA.address, tB.address);
+      const [res0, res1, totalLP, exists] = await amm.getPoolInfo(tA.address, tB.address);
       const userLP = await amm.getUserLP(tA.address, tB.address, wallet.address);
+      // AMM sorts tokens by address: lower address = tokenA
+      const aIsFirst = tA.address.toLowerCase() < tB.address.toLowerCase();
+      const resA = aIsFirst ? res0 : res1;
+      const resB = aIsFirst ? res1 : res0;
       setLpInfo({
         reserveA: ethers.formatUnits(resA, tA.decimals),
         reserveB: ethers.formatUnits(resB, tB.decimals),
