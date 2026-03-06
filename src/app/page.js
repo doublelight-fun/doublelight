@@ -54,7 +54,7 @@ const TAB_ICONS = {
 
 export default function DoubleLight() {
   const {
-    wallet, raiBalance, tokenBalances, fetchTokenBalances, refreshAll, toast,
+    wallet, raiBalance, tokenBalances, fetchTokenBalances, refreshAll = () => {}, toast,
     showWalletMenu, setShowWalletMenu,
     showWalletPicker, setShowWalletPicker,
     walletMenuRef,
