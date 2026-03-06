@@ -21,10 +21,12 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [lpInfo, setLpInfo] = useState(null);
+  const [loadingPool, setLoadingPool] = useState(false);
 
   // Fetch pool info + user LP balance
   const fetchPoolInfo = async (tA, tB) => {
     if (!wallet?.address || !tA.address || !tB.address) return;
+    setLoadingPool(true);
     try {
       const { ethers } = await import("ethers");
       const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
@@ -43,6 +45,7 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
         exists,
       });
     } catch { setLpInfo(null); }
+    setLoadingPool(false);
   };
 
   // Auto-fetch pool info on load
@@ -133,7 +136,10 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
         })}
       </div>
 
-      {lpInfo && lpInfo.exists && (
+      {loadingPool && (
+        <div style={{ padding: "10px", borderRadius: "12px", marginBottom: "10px", background: "rgba(0,229,160,0.02)", border: "1px solid rgba(0,229,160,0.06)", textAlign: "center", fontSize: "11px", color: "#2a5c47", fontFamily: "JetBrains Mono" }}>Loading pool data...</div>
+      )}
+      {!loadingPool && lpInfo && lpInfo.exists && (
         <div style={{ padding: "10px 14px", borderRadius: "12px", marginBottom: "10px", background: "rgba(0,229,160,0.02)", border: "1px solid rgba(0,229,160,0.06)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
             <span style={{ fontSize: "10px", color: "#2a5c47", fontFamily: "Manrope" }}>Pool Reserves</span>
