@@ -20,6 +20,26 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [lpInfo, setLpInfo] = useState(null);
+
+  // Fetch pool info + user LP balance
+  const fetchPoolInfo = async (tA, tB) => {
+    if (!wallet?.address || !tA.address || !tB.address) return;
+    try {
+      const { ethers } = await import("ethers");
+      const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
+      const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, provider);
+      const [resA, resB, totalLP, exists] = await amm.getPoolInfo(tA.address, tB.address);
+      const userLP = await amm.getUserLP(tA.address, tB.address, wallet.address);
+      setLpInfo({
+        reserveA: ethers.formatUnits(resA, tA.decimals),
+        reserveB: ethers.formatUnits(resB, tB.decimals),
+        totalLP: ethers.formatUnits(totalLP, 18),
+        userLP: ethers.formatUnits(userLP, 18),
+        exists,
+      });
+    } catch { setLpInfo(null); }
+  };
 
   const handleAddLiquidity = async () => {
     if (!wallet) { onConnect(); return; }
@@ -41,6 +61,7 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
       setResult({ type: "add", tokenA: tokenA.symbol, tokenB: tokenB.symbol, amountA, amountB, txHash: receipt.hash });
       setAmountA(""); setAmountB("");
       if (onSuccess) onSuccess();
+      fetchPoolInfo(tokenA, tokenB);
     } catch (err) { setError(err.reason || err.message || "Transaction failed"); }
     setProcessing(false);
   };
@@ -60,6 +81,7 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
       setResult({ type: "remove", tokenA: tokenA.symbol, tokenB: tokenB.symbol, lpAmount, txHash: receipt.hash });
       setLpAmount("");
       if (onSuccess) onSuccess();
+      fetchPoolInfo(tokenA, tokenB);
     } catch (err) { setError(err.reason || err.message || "Transaction failed"); }
     setProcessing(false);
   };
@@ -92,13 +114,26 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
           const isActive = tokenA.symbol === pool.a && tokenB.symbol === pool.b;
           return (
             <button key={`${pool.a}-${pool.b}`}
-              onClick={() => { setTokenA(SWAPPABLE.find((t) => t.symbol === pool.a)); setTokenB(SWAPPABLE.find((t) => t.symbol === pool.b)); setResult(null); setError(null); }}
+              onClick={() => { const a = SWAPPABLE.find((t) => t.symbol === pool.a); const b = SWAPPABLE.find((t) => t.symbol === pool.b); setTokenA(a); setTokenB(b); setResult(null); setError(null); fetchPoolInfo(a, b); }}
               style={{ padding: "6px 12px", borderRadius: "10px", background: isActive ? "rgba(0,229,160,0.1)" : "rgba(0,229,160,0.02)", border: `1px solid ${isActive ? "rgba(0,229,160,0.2)" : "rgba(0,229,160,0.06)"}`, color: isActive ? "#00E5A0" : "#4a8a70", fontFamily: "JetBrains Mono", fontSize: "11px", fontWeight: 600, cursor: "pointer", transition: "all .15s" }}>
               {pool.a}/{pool.b}
             </button>
           );
         })}
       </div>
+
+      {lpInfo && lpInfo.exists && (
+        <div style={{ padding: "10px 14px", borderRadius: "12px", marginBottom: "10px", background: "rgba(0,229,160,0.02)", border: "1px solid rgba(0,229,160,0.06)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+            <span style={{ fontSize: "10px", color: "#2a5c47", fontFamily: "Manrope" }}>Pool Reserves</span>
+            <span style={{ fontSize: "10px", color: "#4a8a70", fontFamily: "JetBrains Mono" }}>{parseFloat(lpInfo.reserveA).toFixed(2)} {tokenA.symbol} / {parseFloat(lpInfo.reserveB).toFixed(2)} {tokenB.symbol}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span style={{ fontSize: "10px", color: "#2a5c47", fontFamily: "Manrope" }}>Your LP Tokens</span>
+            <span style={{ fontSize: "10px", color: "#00E5A0", fontFamily: "JetBrains Mono", fontWeight: 700 }}>{parseFloat(lpInfo.userLP).toFixed(6)}</span>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "12px", borderRadius: "14px", marginBottom: "14px", background: "rgba(0,229,160,0.02)", border: "1px solid rgba(0,229,160,0.06)" }}>
         <TokenIcon symbol={tokenA.symbol} color={tokenA.color} size={28} />
@@ -133,7 +168,10 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
         </>
       ) : (
         <div style={{ marginBottom: "14px" }}>
-          <div style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "Manrope", marginBottom: "4px" }}>LP Tokens to Remove</div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+            <span style={{ fontSize: "11px", color: "#2a5c47", fontFamily: "Manrope" }}>LP Tokens to Remove</span>
+            {lpInfo && <span onClick={() => setLpAmount(lpInfo.userLP)} style={{ fontSize: "11px", color: "#00E5A0", fontFamily: "JetBrains Mono", cursor: "pointer" }}>Max: {parseFloat(lpInfo.userLP).toFixed(6)}</span>}
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(0,229,160,0.025)", border: "1px solid rgba(0,229,160,0.08)", borderRadius: "14px", padding: "12px 16px" }}>
             <input type="text" placeholder="0.0" value={lpAmount} onChange={(e) => setLpAmount(e.target.value)}
               style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: "#e6fff5", fontSize: "22px", fontFamily: "Outfit", fontWeight: 700 }} />
