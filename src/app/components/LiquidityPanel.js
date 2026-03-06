@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TokenIcon } from "./TokenInput";
 import { DEFAULT_TOKENS, TOKEN_ADDRESSES, AMM_ADDRESS, AMM_ABI, ERC20_ABI } from "../utils/constants";
 
@@ -44,6 +44,13 @@ export default function LiquidityPanel({ wallet, onConnect, getProvider, onSucce
       });
     } catch { setLpInfo(null); }
   };
+
+  // Auto-fetch pool info on load
+  useEffect(() => {
+    if (wallet?.address && tokenA?.address && tokenB?.address) {
+      fetchPoolInfo(tokenA, tokenB);
+    }
+  }, [wallet?.address]);
 
   const handleAddLiquidity = async () => {
     if (!wallet) { onConnect(); return; }
