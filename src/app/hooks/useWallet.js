@@ -27,7 +27,7 @@ export function useWallet() {
   const fetchCosmosBalance = useCallback(async (addr) => {
     try {
       const res = await fetch(
-        REPUBLIC_CHAIN.rest + "/cosmos/bank/v1beta1/balances/" + addr
+        "https://api-republic.onenov.xyz/cosmos/bank/v1beta1/balances/" + addr
       );
       const data = await res.json();
       const raiBal = data.balances?.find((b) => b.denom === "arai");
@@ -43,7 +43,8 @@ export function useWallet() {
   // Fetch RAI balance via EVM RPC
   const fetchEvmBalance = useCallback(async (addr) => {
     try {
-      const res = await fetch(REPUBLIC_CHAIN.evmRpc, {
+      const rpcUrl = "https://rpc-republic.onenov.xyz";
+    const res = await fetch(rpcUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,7 +113,7 @@ export function useWallet() {
     if (!addr) return;
     try {
       const { ethers } = await import("ethers");
-      const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
+      const provider = new ethers.JsonRpcProvider("https://rpc-republic.onenov.xyz");
       const tokens = {
         WRAI: { address: "0x64B5862c4F875BE29ef86423d44C38d4a536971A", decimals: 18 },
         USDC: { address: "0x4056fbCc1B167deaeF2cAB801C2599BF97C69862", decimals: 6 },

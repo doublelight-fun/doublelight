@@ -120,7 +120,7 @@ export default function DoubleLight() {
     if (!amt || parseFloat(amt) <= 0) { setReceiveAmt(""); return; }
     try {
       const { ethers } = await import("ethers");
-      const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
+      const provider = new ethers.JsonRpcProvider("https://rpc-republic.onenov.xyz");
       const amm = new ethers.Contract(AMM_ADDRESS, AMM_ABI, provider);
       // RAI <-> WRAI is 1:1
       const isWrapUnwrap = (fromToken.symbol === "RAI" && toToken.symbol === "WRAI") || (fromToken.symbol === "WRAI" && toToken.symbol === "RAI");
