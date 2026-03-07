@@ -21,7 +21,7 @@ export default function Header({
     <header
       className="dl-header"
       style={{
-        position: "sticky", className: "dl-header", top: 0, zIndex: 20,
+        position: "sticky", top: 0, zIndex: 20,
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "16px 32px",
         borderBottom: "1px solid rgba(0,229,160,0.05)",
@@ -50,12 +50,13 @@ export default function Header({
             double<span style={{ color: "#00E5A0" }}>light</span>
           </div>
           <div
+            className="dl-header-subtitle"
             style={{
               fontSize: "9px", color: "#2a5c47", fontWeight: 600,
               letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "JetBrains Mono",
             }}
           >
-            AI Privacy DEX
+            AI PRIVACY DEX
           </div>
         </div>
       </div>
@@ -64,6 +65,7 @@ export default function Header({
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         {/* Testnet indicator */}
         <div
+          className="dl-badge-testnet"
           style={{
             padding: "4px 10px", borderRadius: "8px",
             background: "rgba(255,213,79,0.06)",
@@ -77,6 +79,7 @@ export default function Header({
 
         {/* Network badge */}
         <div
+          className="dl-badge-network"
           style={{
             display: "flex", alignItems: "center", gap: "6px",
             padding: "6px 12px", borderRadius: "10px",

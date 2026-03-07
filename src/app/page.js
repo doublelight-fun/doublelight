@@ -249,8 +249,11 @@ export default function DoubleLight() {
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none }
         @media (max-width: 540px) {
           .dl-card { width: 96vw !important; padding: 16px !important; border-radius: 18px !important }
-          .dl-header { padding: 10px 12px !important }
+          .dl-header { padding: 10px 12px !important; gap: 8px !important }
           .dl-header-brand { font-size: 15px !important }
+          .dl-header-subtitle { display: none !important }
+          .dl-badge-testnet { display: none !important }
+          .dl-badge-network { padding: 4px 8px !important; font-size: 9px !important }
           .dl-tabs { overflow-x: auto; gap: 0 !important; width: 96vw; justify-content: flex-start; padding: 3px !important }
           .dl-tabs button { padding: 7px 12px !important; font-size: 10px !important; gap: 3px !important }
           .dl-tabs button svg { width: 10px !important; height: 10px !important }
@@ -262,7 +265,7 @@ export default function DoubleLight() {
           .dl-card { width: 98vw !important; padding: 12px !important }
           .dl-tabs button { padding: 6px 8px !important; font-size: 9px !important }
           .dl-tabs button svg { display: none !important }
-          .dl-header-subtitle { display: none !important }
+          .dl-badge-network { display: none !important }
         }
       `}</style>
 
