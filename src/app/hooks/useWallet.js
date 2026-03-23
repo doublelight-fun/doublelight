@@ -43,7 +43,7 @@ export function useWallet() {
   // Fetch RAI balance via EVM RPC
   const fetchEvmBalance = useCallback(async (addr) => {
     try {
-      const rpcUrl = "https://rpc-republic.onenov.xyz";
+      const rpcUrl = "https://evm-rpc.republicai.io";
     const res = await fetch(rpcUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -113,7 +113,7 @@ export function useWallet() {
     if (!addr) return;
     try {
       const { ethers } = await import("ethers");
-      const provider = new ethers.JsonRpcProvider("https://rpc-republic.onenov.xyz");
+      const provider = new ethers.JsonRpcProvider("https://evm-rpc.republicai.io");
       const tokens = {
         WRAI: { address: "0x64B5862c4F875BE29ef86423d44C38d4a536971A", decimals: 18 },
         USDC: { address: "0x4056fbCc1B167deaeF2cAB801C2599BF97C69862", decimals: 6 },
